@@ -15443,20 +15443,23 @@ function Login() {
     setmsg = _useState4[1];
   var navigate = (0, _reactRouterDom.useNavigate)();
   var check = function check() {
-    _axios.default.get(BASE_URL + LOGIN_URL, {
-      headers: {
-        "Content-Type": "applciation/json",
-        Accept: "applciation/json"
-      }
-    }).then(function (res) {
-      console.log(res.data.data[1].passwd);
-      if (admin.email == res.data.data[0].email && admin.passwd == res.data.data[0].passwd) {
-        navigate("/");
-      } else {
-        console.log(admin);
-        console.log(res.data.data[0].email);
-        setmsg("email and password incoreect");
-      }
+    // axios({
+    //   method: "post",
+    //   baseURL: "http://localhost:3001",
+    //   url: "/login",
+    //   payload: admin,
+    // })
+    _axios.default.post('http://localhost:3001/login', admin).then(function (res) {
+      console.log(res);
+      // res.data.data.map((item) => {
+      //   if (admin.email == item.email && admin.passwd == item.passwd) {
+      //     navigate("/");
+      //   } else {
+      //     console.log(admin);
+      //     console.log(item.email);
+      //     setmsg("email and password incoreect");
+      //   }
+      // });
     }).catch(function (error) {
       console.log(error);
     });
@@ -15497,7 +15500,7 @@ function Login() {
     className: "input-group mb-3",
     style: {
       padding: "15px",
-      width: 'max-content'
+      width: "max-content"
     }
   }, /*#__PURE__*/_react.default.createElement("input", {
     type: "email",
@@ -15509,7 +15512,7 @@ function Login() {
     className: "input-group mb-3",
     style: {
       padding: "15px",
-      width: 'max-content'
+      width: "max-content"
     }
   }, /*#__PURE__*/_react.default.createElement("input", {
     onChange: setData,
@@ -41945,7 +41948,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "36539" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "38671" + '/');
   ws.onmessage = function (event) {
     checkedAssets = {};
     assetsToAccept = [];

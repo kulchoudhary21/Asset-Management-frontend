@@ -16,25 +16,24 @@ export default function Login() {
   const [msg, setmsg] = useState("");
   const navigate = useNavigate();
   const check = () => {
-    axios
-      .get(BASE_URL + LOGIN_URL, {
-        headers: {
-          "Content-Type": "applciation/json",
-          Accept: "applciation/json",
-        },
-      })
+    // axios({
+    //   method: "post",
+    //   baseURL: "http://localhost:3001",
+    //   url: "/login",
+    //   payload: admin,
+    // })
+    axios.post('http://localhost:3001/login', admin)
       .then((res) => {
-        console.log(res.data.data[1].passwd);
-        if (
-          admin.email == res.data.data[0].email &&
-          admin.passwd == res.data.data[0].passwd
-        ) {
-          navigate("/");
-        } else {
-          console.log(admin);
-          console.log(res.data.data[0].email);
-          setmsg("email and password incoreect");
-        }
+        console.log(res);
+        // res.data.data.map((item) => {
+        //   if (admin.email == item.email && admin.passwd == item.passwd) {
+        //     navigate("/");
+        //   } else {
+        //     console.log(admin);
+        //     console.log(item.email);
+        //     setmsg("email and password incoreect");
+        //   }
+        // });
       })
       .catch((error) => {
         console.log(error);
@@ -51,7 +50,7 @@ export default function Login() {
   return (
     <div className="container-fluid">
       <div className="row">
-        <div className="col-6" >
+        <div className="col-6">
           <img
             src={image2}
             style={{
@@ -66,7 +65,10 @@ export default function Login() {
           <div>
             <label style={{ paddingBottom: "40px" }}>Login</label>
           </div>
-          <div className="input-group mb-3" style={{ padding: "15px" ,width:'max-content'}}>
+          <div
+            className="input-group mb-3"
+            style={{ padding: "15px", width: "max-content" }}
+          >
             <input
               type="email"
               className="form-control"
@@ -75,7 +77,10 @@ export default function Login() {
               name="email"
             />
           </div>
-          <div className="input-group mb-3" style={{ padding: "15px" ,width:'max-content'}}>
+          <div
+            className="input-group mb-3"
+            style={{ padding: "15px", width: "max-content" }}
+          >
             <input
               onChange={setData}
               name="password"
@@ -97,4 +102,17 @@ export default function Login() {
     </div>
   );
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
 

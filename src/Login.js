@@ -2,12 +2,9 @@ import "../css/login.css";
 import axios from "axios";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import image1 from "../images/img3.webp";
 import image2 from "../images/img4.jpeg";
 import "../css/login.css";
 import loginComponent from "../component-css/loginComponent";
-const BASE_URL = "http://localhost:4000/";
-const LOGIN_URL = "login";
 const adminData = () => {
   return { email: "", passwd: "" };
 };
@@ -16,30 +13,21 @@ export default function Login() {
   const [msg, setmsg] = useState("");
   const navigate = useNavigate();
   const check = () => {
-    // axios({
-    //   method: "post",
-    //   baseURL: "http://localhost:3001",
-    //   url: "/login",
-    //   payload: admin,
-    // })
-    axios.post('http://localhost:3001/login', admin)
+    axios
+      .post("http://localhost:3001/login", admin)
       .then((res) => {
         console.log(res);
-        // res.data.data.map((item) => {
-        //   if (admin.email == item.email && admin.passwd == item.passwd) {
-        //     navigate("/");
-        //   } else {
-        //     console.log(admin);
-        //     console.log(item.email);
-        //     setmsg("email and password incoreect");
-        //   }
-        // });
+        if (res.data.status == "success") {
+          navigate("/");
+          
+        } else {
+          setmsg("email and password incoreect");
+        }
       })
       .catch((error) => {
         console.log(error);
       });
   };
-
   const setData = (e) => {
     if (e.target.name == "email") {
       setAdmin({ ...admin, email: e.target.value });
@@ -102,17 +90,3 @@ export default function Login() {
     </div>
   );
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-

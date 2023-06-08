@@ -1,40 +1,42 @@
 import "../css/login.css";
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import image2 from "../images/img4.jpeg";
 import "../css/login.css";
 import loginComponent from "../component-css/loginComponent";
-import Header from "./Header";
 const adminData = () => {
   return { email: "", passwd: "" };
 };
-export default function Login({ login, isLogin }) {
+export default function Login({ login }) {
   const [admin, setAdmin] = useState(() => adminData());
   const [msg, setmsg] = useState("");
   const navigate = useNavigate();
-  useEffect(() => {
-    console.log(isLogin);
-    if (isLogin) {
-      navigate("/dash");
-    }
-  }, []);
   const check = () => {
+    if(admin.email!="" && admin.passwd!=""){
     axios
       .post("http://localhost:3001/login", admin)
       .then((res) => {
-        console.log(res);
         if (res.data.status == "success") {
           login();
-          navigate("/dash");
+          navigate("/home");
         } else {
-          setmsg("email and password incoreect");
+          setmsg("email not exists");
         }
       })
       .catch((error) => {
+        if (error.response.data.msg == "Invalid email") {
+          setmsg("email not exists");
+        } else {
+          setmsg("incorrect password");
+        }
         console.log(error);
       });
-  };
+    }
+    else{
+        setmsg("Enter email and password")
+    }
+  }
   const setData = (e) => {
     if (e.target.name == "email") {
       setAdmin({ ...admin, email: e.target.value });
@@ -44,17 +46,15 @@ export default function Login({ login, isLogin }) {
   };
   return (
     <div className="container-fluid">
-      <Header></Header>
-
       <div className="row">
-        <div className="col-6">
+        <div className="col-6" style={{ display: "contents" }}>
           <img
             src={image2}
             style={{
               backgroundRepeat: " no-repeat",
               backgroundAttachment: "fixed",
               width: "750px",
-              height: "750px",
+              height: "100vh",
             }}
           ></img>
         </div>

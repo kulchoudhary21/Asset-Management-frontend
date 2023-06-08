@@ -1,8 +1,5 @@
 import React from "react";
 import { Link, Navigate } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
-import Login from "./Login";
-
 function Header({ isLogin }) {
   return (
     <div>
@@ -26,15 +23,15 @@ function Header({ isLogin }) {
                 </Link>
               </li>
 
-              {/* <li className="nav-item">
+              <li className="nav-item">
                 <Link
                   className="nav-link active"
                   aria-current="page"
-                  to="/login"
+                  to="/logout"
                 >
-                  Login
+                  Logout
                 </Link>
-              </li> */}
+              </li>
             </ul>
           </div>
         </div>

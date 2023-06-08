@@ -1,25 +1,32 @@
 import "../css/login.css";
 import axios from "axios";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import image2 from "../images/img4.jpeg";
 import "../css/login.css";
 import loginComponent from "../component-css/loginComponent";
+import Header from "./Header";
 const adminData = () => {
   return { email: "", passwd: "" };
 };
-export default function Login() {
+export default function Login({ login, isLogin }) {
   const [admin, setAdmin] = useState(() => adminData());
   const [msg, setmsg] = useState("");
   const navigate = useNavigate();
+  useEffect(() => {
+    console.log(isLogin);
+    if (isLogin) {
+      navigate("/dash");
+    }
+  }, []);
   const check = () => {
     axios
       .post("http://localhost:3001/login", admin)
       .then((res) => {
         console.log(res);
         if (res.data.status == "success") {
-          navigate("/");
-          
+          login();
+          navigate("/dash");
         } else {
           setmsg("email and password incoreect");
         }
@@ -37,6 +44,8 @@ export default function Login() {
   };
   return (
     <div className="container-fluid">
+      <Header></Header>
+
       <div className="row">
         <div className="col-6">
           <img

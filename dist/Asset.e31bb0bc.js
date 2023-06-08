@@ -2593,7 +2593,7 @@ function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && iter[Symb
 function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
 function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
 /**
- * @remix-run/router v1.6.2
+ * @remix-run/router v1.6.3
  *
  * Copyright (c) Remix Software Inc.
  *
@@ -2620,7 +2620,6 @@ function _extends() {
 ////////////////////////////////////////////////////////////////////////////////
 //#region Types and Constants
 ////////////////////////////////////////////////////////////////////////////////
-
 /**
  * Actions represent the type of change to a location value.
  */
@@ -2640,13 +2639,11 @@ exports.Action = Action;
    * a link is clicked and a new page loads. When this happens, all subsequent
    * entries in the stack are lost.
    */
-
   Action["Push"] = "PUSH";
   /**
    * A REPLACE indicates the entry at the current index in the history stack
    * being replaced by a new one.
    */
-
   Action["Replace"] = "REPLACE";
 })(Action || (exports.Action = Action = {}));
 var PopStateEventType = "popstate";
@@ -2654,7 +2651,6 @@ var PopStateEventType = "popstate";
  * Memory history stores the current location in memory. It is designed for use
  * in stateful non-browser environments like tests and React Native.
  */
-
 function createMemoryHistory(options) {
   if (options === void 0) {
     options = {};
@@ -2666,7 +2662,6 @@ function createMemoryHistory(options) {
     _options$v5Compat = _options.v5Compat,
     v5Compat = _options$v5Compat === void 0 ? false : _options$v5Compat;
   var entries; // Declare so we can access from createMemoryLocation
-
   entries = initialEntries.map(function (entry, index) {
     return createMemoryLocation(entry, typeof entry === "string" ? null : entry.state, index === 0 ? "default" : undefined);
   });
@@ -2766,7 +2761,6 @@ function createMemoryHistory(options) {
  *
  * @see https://github.com/remix-run/history/tree/main/docs/api-reference.md#createbrowserhistory
  */
-
 function createBrowserHistory(options) {
   if (options === void 0) {
     options = {};
@@ -2797,7 +2791,6 @@ function createBrowserHistory(options) {
  *
  * @see https://github.com/remix-run/history/tree/main/docs/api-reference.md#createhashhistory
  */
-
 function createHashHistory(options) {
   if (options === void 0) {
     options = {};
@@ -2848,7 +2841,8 @@ function warning(cond, message) {
       // This error is thrown as a convenience so you can more easily
       // find the source for a warning that appears in the console by
       // enabling "pause on exceptions" in your JavaScript debugger.
-      throw new Error(message); // eslint-disable-next-line no-empty
+      throw new Error(message);
+      // eslint-disable-next-line no-empty
     } catch (e) {}
   }
 }
@@ -2858,7 +2852,6 @@ function createKey() {
 /**
  * For browser-based histories, we combine the state and key into an object
  */
-
 function getHistoryState(location, index) {
   return {
     usr: location.state,
@@ -2869,7 +2862,6 @@ function getHistoryState(location, index) {
 /**
  * Creates a Location object with a unique key from the given Path
  */
-
 function createLocation(current, to, state, key) {
   if (state === void 0) {
     state = null;
@@ -2891,7 +2883,6 @@ function createLocation(current, to, state, key) {
 /**
  * Creates a string URL path from the given pathname, search, and hash components.
  */
-
 function createPath(_ref) {
   var _ref$pathname = _ref.pathname,
     pathname = _ref$pathname === void 0 ? "/" : _ref$pathname,
@@ -2906,7 +2897,6 @@ function createPath(_ref) {
 /**
  * Parses a string URL path into its separate pathname, search, and hash components.
  */
-
 function parsePath(path) {
   var parsedPath = {};
   if (path) {
@@ -2938,10 +2928,10 @@ function getUrlBasedHistory(getLocation, _createHref, validateLocation, options)
   var globalHistory = window.history;
   var action = Action.Pop;
   var listener = null;
-  var index = getIndex(); // Index should only be null when we initialize. If not, it's because the
+  var index = getIndex();
+  // Index should only be null when we initialize. If not, it's because the
   // user called history.pushState or history.replaceState directly, in which
   // case we should log a warning as it will result in bugs.
-
   if (index == null) {
     index = 0;
     globalHistory.replaceState(_extends({}, globalHistory.state, {
@@ -2973,11 +2963,18 @@ function getUrlBasedHistory(getLocation, _createHref, validateLocation, options)
     if (validateLocation) validateLocation(location, to);
     index = getIndex() + 1;
     var historyState = getHistoryState(location, index);
-    var url = history.createHref(location); // try...catch because iOS limits us to 100 pushState calls :/
-
+    var url = history.createHref(location);
+    // try...catch because iOS limits us to 100 pushState calls :/
     try {
       globalHistory.pushState(historyState, "", url);
     } catch (error) {
+      // If the exception is because `state` can't be serialized, let that throw
+      // outwards just like a replace call would so the dev knows the cause
+      // https://html.spec.whatwg.org/multipage/nav-history-apis.html#shared-history-push/replace-state-steps
+      // https://html.spec.whatwg.org/multipage/structured-data.html#structuredserializeinternal
+      if (error instanceof DOMException && error.name === "DataCloneError") {
+        throw error;
+      }
       // They are going to lose state here, but there is no real
       // way to warn them about it since the page will refresh...
       window.location.assign(url);
@@ -3053,7 +3050,8 @@ function getUrlBasedHistory(getLocation, _createHref, validateLocation, options)
     }
   };
   return history;
-} //#endregion
+}
+//#endregion
 
 var ResultType;
 (function (ResultType) {
@@ -3065,9 +3063,9 @@ var ResultType;
 var immutableRouteKeys = new Set(["lazy", "caseSensitive", "path", "id", "index", "children"]);
 function isIndexRoute(route) {
   return route.index === true;
-} // Walk the route tree generating unique IDs where necessary so we are working
+}
+// Walk the route tree generating unique IDs where necessary so we are working
 // solely with AgnosticDataRouteObject's within the Router
-
 function convertRoutesToDataRoutes(routes, mapRouteProperties, parentPath, manifest) {
   if (parentPath === void 0) {
     parentPath = [];
@@ -3104,7 +3102,6 @@ function convertRoutesToDataRoutes(routes, mapRouteProperties, parentPath, manif
  *
  * @see https://reactrouter.com/utils/match-routes
  */
-
 function matchRoutes(routes, locationArg, basename) {
   if (basename === void 0) {
     basename = "/";
@@ -3151,19 +3148,19 @@ function flattenRoutes(routes, branches, parentsMeta, parentPath) {
       meta.relativePath = meta.relativePath.slice(parentPath.length);
     }
     var path = joinPaths([parentPath, meta.relativePath]);
-    var routesMeta = parentsMeta.concat(meta); // Add the children before adding this route to the array so we traverse the
+    var routesMeta = parentsMeta.concat(meta);
+    // Add the children before adding this route to the array so we traverse the
     // route tree depth-first and child routes appear before their parents in
     // the "flattened" version.
-
     if (route.children && route.children.length > 0) {
       invariant(
       // Our types know better, but runtime JS may not!
       // @ts-expect-error
       route.index !== true, "Index routes must not have child routes. Please remove " + ("all child routes from route path \"" + path + "\"."));
       flattenRoutes(route.children, branches, routesMeta, path);
-    } // Routes without a path shouldn't ever match by themselves unless they are
+    }
+    // Routes without a path shouldn't ever match by themselves unless they are
     // index routes, so don't add them to the list of possible branches.
-
     if (route.path == null && !route.index) {
       return;
     }
@@ -3175,7 +3172,6 @@ function flattenRoutes(routes, branches, parentsMeta, parentPath) {
   };
   routes.forEach(function (route, index) {
     var _route$path;
-
     // coarse-grain check for optional params
     if (route.path === "" || !((_route$path = route.path) != null && _route$path.includes("?"))) {
       flattenRoute(route, index);
@@ -3210,16 +3206,15 @@ function flattenRoutes(routes, branches, parentsMeta, parentPath) {
  * - `/one/three/:four/:five`
  * - `/one/:two/three/:four/:five`
  */
-
 function explodeOptionalSegments(path) {
   var segments = path.split("/");
   if (segments.length === 0) return [];
   var _segments = _toArray(segments),
     first = _segments[0],
-    rest = _segments.slice(1); // Optional path segments are denoted by a trailing `?`
-
-  var isOptional = first.endsWith("?"); // Compute the corresponding required segment: `foo?` -> `foo`
-
+    rest = _segments.slice(1);
+  // Optional path segments are denoted by a trailing `?`
+  var isOptional = first.endsWith("?");
+  // Compute the corresponding required segment: `foo?` -> `foo`
   var required = first.replace(/\?$/, "");
   if (rest.length === 0) {
     // Intepret empty string as omitting an optional segment
@@ -3227,22 +3222,22 @@ function explodeOptionalSegments(path) {
     return isOptional ? [required, ""] : [required];
   }
   var restExploded = explodeOptionalSegments(rest.join("/"));
-  var result = []; // All child paths with the prefix.  Do this for all children before the
+  var result = [];
+  // All child paths with the prefix.  Do this for all children before the
   // optional version for all children so we get consistent ordering where the
   // parent optional aspect is preferred as required.  Otherwise, we can get
   // child sections interspersed where deeper optional segments are higher than
   // parent optional segments, where for example, /:two would explodes _earlier_
   // then /:one.  By always including the parent as required _for all children_
   // first, we avoid this issue
-
   result.push.apply(result, _toConsumableArray(restExploded.map(function (subpath) {
     return subpath === "" ? required : [required, subpath].join("/");
-  }))); // Then if this is an optional value, add all child versions without
-
+  })));
+  // Then if this is an optional value, add all child versions without
   if (isOptional) {
     result.push.apply(result, _toConsumableArray(restExploded));
-  } // for absolute paths, ensure `/` instead of empty segment
-
+  }
+  // for absolute paths, ensure `/` instead of empty segment
   return result.map(function (exploded) {
     return path.startsWith("/") && exploded === "" ? "/" : exploded;
   });
@@ -3330,7 +3325,6 @@ function matchRouteBranch(branch, pathname) {
  *
  * @see https://reactrouter.com/utils/generate-path
  */
-
 function generatePath(originalPath, params) {
   if (params === void 0) {
     params = {};
@@ -3339,16 +3333,16 @@ function generatePath(originalPath, params) {
   if (path.endsWith("*") && path !== "*" && !path.endsWith("/*")) {
     warning(false, "Route path \"" + path + "\" will be treated as if it were " + ("\"" + path.replace(/\*$/, "/*") + "\" because the `*` character must ") + "always follow a `/` in the pattern. To get rid of this warning, " + ("please change the route path to \"" + path.replace(/\*$/, "/*") + "\"."));
     path = path.replace(/\*$/, "/*");
-  } // ensure `/` is added at the beginning if the path is absolute
-
+  }
+  // ensure `/` is added at the beginning if the path is absolute
   var prefix = path.startsWith("/") ? "/" : "";
   var segments = path.split(/\/+/).map(function (segment, index, array) {
-    var isLastSegment = index === array.length - 1; // only apply the splat if it's the last segment
-
+    var isLastSegment = index === array.length - 1;
+    // only apply the splat if it's the last segment
     if (isLastSegment && segment === "*") {
       var star = "*";
-      var starParam = params[star]; // Apply the splat
-
+      var starParam = params[star];
+      // Apply the splat
       return starParam;
     }
     var keyMatch = segment.match(/^:(\w+)(\??)$/);
@@ -3364,10 +3358,11 @@ function generatePath(originalPath, params) {
         invariant(false, "Missing \":" + key + "\" param");
       }
       return param;
-    } // Remove any optional markers from optional static segments
-
+    }
+    // Remove any optional markers from optional static segments
     return segment.replace(/\?$/g, "");
-  }) // Remove empty segments
+  })
+  // Remove empty segments
   .filter(function (segment) {
     return !!segment;
   });
@@ -3379,7 +3374,6 @@ function generatePath(originalPath, params) {
  *
  * @see https://reactrouter.com/utils/match-path
  */
-
 function matchPath(pattern, pathname) {
   if (typeof pattern === "string") {
     pattern = {
@@ -3469,14 +3463,13 @@ function safelyDecodeURIComponent(value, paramName) {
 /**
  * @private
  */
-
 function stripBasename(pathname, basename) {
   if (basename === "/") return pathname;
   if (!pathname.toLowerCase().startsWith(basename.toLowerCase())) {
     return null;
-  } // We want to leave trailing slash behavior in the user's control, so if they
+  }
+  // We want to leave trailing slash behavior in the user's control, so if they
   // specify a basename with a trailing slash, we should support it
-
   var startIndex = basename.endsWith("/") ? basename.length - 1 : basename.length;
   var nextChar = pathname.charAt(startIndex);
   if (nextChar && nextChar !== "/") {
@@ -3490,7 +3483,6 @@ function stripBasename(pathname, basename) {
  *
  * @see https://reactrouter.com/utils/resolve-path
  */
-
 function resolvePath(to, fromPathname) {
   if (fromPathname === void 0) {
     fromPathname = "/";
@@ -3547,7 +3539,6 @@ function getInvalidPathError(char, field, dest, path) {
  *     </Route>
  *   </Route>
  */
-
 function getPathContributingMatches(matches) {
   return matches.filter(function (match, index) {
     return index === 0 || match.route.path && match.route.path.length > 0;
@@ -3556,7 +3547,6 @@ function getPathContributingMatches(matches) {
 /**
  * @private
  */
-
 function resolveTo(toArg, routePathnames, locationPathname, isPathRelative) {
   if (isPathRelative === void 0) {
     isPathRelative = false;
@@ -3572,7 +3562,8 @@ function resolveTo(toArg, routePathnames, locationPathname, isPathRelative) {
   }
   var isEmptyPath = toArg === "" || to.pathname === "";
   var toPathname = isEmptyPath ? "/" : to.pathname;
-  var from; // Routing is relative to the current pathname if explicitly requested.
+  var from;
+  // Routing is relative to the current pathname if explicitly requested.
   //
   // If a pathname is explicitly provided in `to`, it should be relative to the
   // route context. This is explained in `Note on `<Link to>` values` in our
@@ -3581,30 +3572,29 @@ function resolveTo(toArg, routePathnames, locationPathname, isPathRelative) {
   // `to` values that do not provide a pathname. `to` can simply be a search or
   // hash string, in which case we should assume that the navigation is relative
   // to the current location's pathname and *not* the route pathname.
-
   if (isPathRelative || toPathname == null) {
     from = locationPathname;
   } else {
     var routePathnameIndex = routePathnames.length - 1;
     if (toPathname.startsWith("..")) {
-      var toSegments = toPathname.split("/"); // Each leading .. segment means "go up one route" instead of "go up one
+      var toSegments = toPathname.split("/");
+      // Each leading .. segment means "go up one route" instead of "go up one
       // URL segment".  This is a key difference from how <a href> works and a
       // major reason we call this a "to" value instead of a "href".
-
       while (toSegments[0] === "..") {
         toSegments.shift();
         routePathnameIndex -= 1;
       }
       to.pathname = toSegments.join("/");
-    } // If there are more ".." segments than parent routes, resolve relative to
+    }
+    // If there are more ".." segments than parent routes, resolve relative to
     // the root / URL.
-
     from = routePathnameIndex >= 0 ? routePathnames[routePathnameIndex] : "/";
   }
-  var path = resolvePath(to, from); // Ensure the pathname has a trailing slash if the original "to" had one
-
-  var hasExplicitTrailingSlash = toPathname && toPathname !== "/" && toPathname.endsWith("/"); // Or if this was a link to the current path which has a trailing slash
-
+  var path = resolvePath(to, from);
+  // Ensure the pathname has a trailing slash if the original "to" had one
+  var hasExplicitTrailingSlash = toPathname && toPathname !== "/" && toPathname.endsWith("/");
+  // Or if this was a link to the current path which has a trailing slash
   var hasCurrentTrailingSlash = (isEmptyPath || toPathname === ".") && locationPathname.endsWith("/");
   if (!path.pathname.endsWith("/") && (hasExplicitTrailingSlash || hasCurrentTrailingSlash)) {
     path.pathname += "/";
@@ -3614,7 +3604,6 @@ function resolveTo(toArg, routePathnames, locationPathname, isPathRelative) {
 /**
  * @private
  */
-
 function getToPathname(to) {
   // Empty strings should be treated the same as / paths
   return to === "" || to.pathname === "" ? "/" : typeof to === "string" ? parsePath(to).pathname : to.pathname;
@@ -3622,7 +3611,6 @@ function getToPathname(to) {
 /**
  * @private
  */
-
 var joinPaths = function joinPaths(paths) {
   return paths.join("/").replace(/\/\/+/g, "/");
 };
@@ -3643,7 +3631,6 @@ var normalizeSearch = function normalizeSearch(search) {
 /**
  * @private
  */
-
 var normalizeHash = function normalizeHash(hash) {
   return !hash || hash === "#" ? "" : hash.startsWith("#") ? hash : "#" + hash;
 };
@@ -3651,7 +3638,6 @@ var normalizeHash = function normalizeHash(hash) {
  * This is a shortcut for creating `application/json` responses. Converts `data`
  * to JSON and sets the `Content-Type` header.
  */
-
 var json = function json(data, init) {
   if (init === void 0) {
     init = {};
@@ -3685,9 +3671,9 @@ var DeferredData = /*#__PURE__*/function () {
     this.pendingKeysSet = new Set();
     this.subscribers = new Set();
     this.deferredKeys = [];
-    invariant(data && _typeof(data) === "object" && !Array.isArray(data), "defer() only accepts plain objects"); // Set up an AbortController + Promise we can race against to exit early
+    invariant(data && _typeof(data) === "object" && !Array.isArray(data), "defer() only accepts plain objects");
+    // Set up an AbortController + Promise we can race against to exit early
     // cancellation
-
     var reject;
     this.abortPromise = new Promise(function (_, r) {
       return reject = r;
@@ -3720,16 +3706,16 @@ var DeferredData = /*#__PURE__*/function () {
         return value;
       }
       this.deferredKeys.push(key);
-      this.pendingKeysSet.add(key); // We store a little wrapper promise that will be extended with
+      this.pendingKeysSet.add(key);
+      // We store a little wrapper promise that will be extended with
       // _data/_error props upon resolve/reject
-
       var promise = Promise.race([value, this.abortPromise]).then(function (data) {
         return _this2.onSettle(promise, key, null, data);
       }, function (error) {
         return _this2.onSettle(promise, key, error);
-      }); // Register rejection listeners to avoid uncaught promise rejections on
+      });
+      // Register rejection listeners to avoid uncaught promise rejections on
       // errors or aborted deferred values
-
       promise.catch(function () {});
       Object.defineProperty(promise, "_tracked", {
         get: function get() {
@@ -3969,22 +3955,22 @@ var IDLE_BLOCKER = {
 };
 exports.IDLE_BLOCKER = IDLE_BLOCKER;
 var ABSOLUTE_URL_REGEX = /^(?:[a-z][a-z0-9+.-]*:|\/\/)/i;
-var isBrowser = typeof window !== "undefined" && typeof window.document !== "undefined" && typeof window.document.createElement !== "undefined";
-var isServer = !isBrowser;
 var defaultMapRouteProperties = function defaultMapRouteProperties(route) {
   return {
     hasErrorBoundary: Boolean(route.hasErrorBoundary)
   };
-}; //#endregion
+};
+//#endregion
 ////////////////////////////////////////////////////////////////////////////////
 //#region createRouter
 ////////////////////////////////////////////////////////////////////////////////
-
 /**
  * Create a router and listen to history POP navigations
  */
-
 function createRouter(init) {
+  var routerWindow = init.window ? init.window : typeof window !== "undefined" ? window : undefined;
+  var isBrowser = typeof routerWindow !== "undefined" && typeof routerWindow.document !== "undefined" && typeof routerWindow.document.createElement !== "undefined";
+  var isServer = !isBrowser;
   invariant(init.routes.length > 0, "You must provide a non-empty routes array to createRouter");
   var mapRouteProperties;
   if (init.mapRouteProperties) {
@@ -3999,34 +3985,34 @@ function createRouter(init) {
     };
   } else {
     mapRouteProperties = defaultMapRouteProperties;
-  } // Routes keyed by ID
-
-  var manifest = {}; // Routes in tree format for matching
-
+  }
+  // Routes keyed by ID
+  var manifest = {};
+  // Routes in tree format for matching
   var dataRoutes = convertRoutesToDataRoutes(init.routes, mapRouteProperties, undefined, manifest);
   var inFlightDataRoutes;
-  var basename = init.basename || "/"; // Config driven behavior flags
-
+  var basename = init.basename || "/";
+  // Config driven behavior flags
   var future = _extends({
     v7_normalizeFormMethod: false,
     v7_prependBasename: false
-  }, init.future); // Cleanup function for history
-
-  var unlistenHistory = null; // Externally-provided functions to call on all state changes
-
-  var subscribers = new Set(); // Externally-provided object to hold scroll restoration locations during routing
-
-  var savedScrollPositions = null; // Externally-provided function to get scroll restoration keys
-
-  var getScrollRestorationKey = null; // Externally-provided function to get current scroll position
-
-  var getScrollPosition = null; // One-time flag to control the initial hydration scroll restoration.  Because
+  }, init.future);
+  // Cleanup function for history
+  var unlistenHistory = null;
+  // Externally-provided functions to call on all state changes
+  var subscribers = new Set();
+  // Externally-provided object to hold scroll restoration locations during routing
+  var savedScrollPositions = null;
+  // Externally-provided function to get scroll restoration keys
+  var getScrollRestorationKey = null;
+  // Externally-provided function to get current scroll position
+  var getScrollPosition = null;
+  // One-time flag to control the initial hydration scroll restoration.  Because
   // we don't get the saved positions from <ScrollRestoration /> until _after_
   // the initial render, we need to manually trigger a separate updateState to
   // send along the restoreScrollPosition
   // Set to true if we have `hydrationData` since we assume we were SSR'd and that
   // SSR did the initial scroll restoration.
-
   var initialScrollRestored = init.hydrationData != null;
   var initialMatches = matchRoutes(dataRoutes, init.history.location, basename);
   var initialErrors = null;
@@ -4068,57 +4054,57 @@ function createRouter(init) {
     errors: init.hydrationData && init.hydrationData.errors || initialErrors,
     fetchers: new Map(),
     blockers: new Map()
-  }; // -- Stateful internal variables to manage navigations --
+  };
+  // -- Stateful internal variables to manage navigations --
   // Current navigation in progress (to be committed in completeNavigation)
-
-  var pendingAction = Action.Pop; // Should the current navigation prevent the scroll reset if scroll cannot
+  var pendingAction = Action.Pop;
+  // Should the current navigation prevent the scroll reset if scroll cannot
   // be restored?
-
-  var pendingPreventScrollReset = false; // AbortController for the active navigation
-
-  var pendingNavigationController; // We use this to avoid touching history in completeNavigation if a
+  var pendingPreventScrollReset = false;
+  // AbortController for the active navigation
+  var pendingNavigationController;
+  // We use this to avoid touching history in completeNavigation if a
   // revalidation is entirely uninterrupted
-
-  var isUninterruptedRevalidation = false; // Use this internal flag to force revalidation of all loaders:
+  var isUninterruptedRevalidation = false;
+  // Use this internal flag to force revalidation of all loaders:
   //  - submissions (completed or interrupted)
   //  - useRevalidator()
   //  - X-Remix-Revalidate (from redirect)
-
-  var isRevalidationRequired = false; // Use this internal array to capture routes that require revalidation due
+  var isRevalidationRequired = false;
+  // Use this internal array to capture routes that require revalidation due
   // to a cancelled deferred on action submission
-
-  var cancelledDeferredRoutes = []; // Use this internal array to capture fetcher loads that were cancelled by an
+  var cancelledDeferredRoutes = [];
+  // Use this internal array to capture fetcher loads that were cancelled by an
   // action navigation and require revalidation
-
-  var cancelledFetcherLoads = []; // AbortControllers for any in-flight fetchers
-
-  var fetchControllers = new Map(); // Track loads based on the order in which they started
-
-  var incrementingLoadId = 0; // Track the outstanding pending navigation data load to be compared against
+  var cancelledFetcherLoads = [];
+  // AbortControllers for any in-flight fetchers
+  var fetchControllers = new Map();
+  // Track loads based on the order in which they started
+  var incrementingLoadId = 0;
+  // Track the outstanding pending navigation data load to be compared against
   // the globally incrementing load when a fetcher load lands after a completed
   // navigation
-
-  var pendingNavigationLoadId = -1; // Fetchers that triggered data reloads as a result of their actions
-
-  var fetchReloadIds = new Map(); // Fetchers that triggered redirect navigations
-
-  var fetchRedirectIds = new Set(); // Most recent href/match for fetcher.load calls for fetchers
-
-  var fetchLoadMatches = new Map(); // Store DeferredData instances for active route matches.  When a
+  var pendingNavigationLoadId = -1;
+  // Fetchers that triggered data reloads as a result of their actions
+  var fetchReloadIds = new Map();
+  // Fetchers that triggered redirect navigations
+  var fetchRedirectIds = new Set();
+  // Most recent href/match for fetcher.load calls for fetchers
+  var fetchLoadMatches = new Map();
+  // Store DeferredData instances for active route matches.  When a
   // route loader returns defer() we stick one in here.  Then, when a nested
   // promise resolves we update loaderData.  If a new navigation starts we
   // cancel active deferreds for eliminated routes.
-
-  var activeDeferreds = new Map(); // Store blocker functions in a separate Map outside of router state since
+  var activeDeferreds = new Map();
+  // Store blocker functions in a separate Map outside of router state since
   // we don't need to update UI state if they change
-
-  var blockerFunctions = new Map(); // Flag to ignore the next history update, so we can revert the URL change on
+  var blockerFunctions = new Map();
+  // Flag to ignore the next history update, so we can revert the URL change on
   // a POP navigation that was blocked by the user without touching router state
-
-  var ignoreNextHistoryUpdate = false; // Initialize the router, all side effects should be kicked off from here.
+  var ignoreNextHistoryUpdate = false;
+  // Initialize the router, all side effects should be kicked off from here.
   // Implemented as a Fluent API for ease of:
   //   let router = createRouter(init).initialize();
-
   function initialize() {
     // If history informs us of a POP navigation, start the navigation but do not update
     // state.  We'll update our own state once the navigation completes
@@ -4126,7 +4112,6 @@ function createRouter(init) {
       var historyAction = _ref.action,
         location = _ref.location,
         delta = _ref.delta;
-
       // Ignore this event if it was just us resetting the URL from a
       // blocked POP navigation
       if (ignoreNextHistoryUpdate) {
@@ -4142,8 +4127,8 @@ function createRouter(init) {
       if (blockerKey && delta != null) {
         // Restore the URL to match the current UI, but don't update router state
         ignoreNextHistoryUpdate = true;
-        init.history.go(delta * -1); // Put the blocker into a blocked state
-
+        init.history.go(delta * -1);
+        // Put the blocker into a blocked state
         updateBlocker(blockerKey, {
           state: "blocked",
           location: location,
@@ -4153,8 +4138,8 @@ function createRouter(init) {
               proceed: undefined,
               reset: undefined,
               location: location
-            }); // Re-do the same POP navigation we just blocked
-
+            });
+            // Re-do the same POP navigation we just blocked
             init.history.go(delta);
           },
           reset: function reset() {
@@ -4167,18 +4152,18 @@ function createRouter(init) {
         return;
       }
       return startNavigation(historyAction, location);
-    }); // Kick off initial data load if needed.  Use Pop to avoid modifying history
+    });
+    // Kick off initial data load if needed.  Use Pop to avoid modifying history
     // Note we don't do any handling of lazy here.  For SPA's it'll get handled
     // in the normal navigation flow.  For SSR it's expected that lazy modules are
     // resolved prior to router creation since we can't go into a fallbackElement
     // UI for SSR'd apps
-
     if (!state.initialized) {
       startNavigation(Action.Pop, state.location);
     }
     return router;
-  } // Clean up a router and it's side effects
-
+  }
+  // Clean up a router and it's side effects
   function dispose() {
     if (unlistenHistory) {
       unlistenHistory();
@@ -4191,29 +4176,28 @@ function createRouter(init) {
     state.blockers.forEach(function (_, key) {
       return deleteBlocker(key);
     });
-  } // Subscribe to state updates for the router
-
+  }
+  // Subscribe to state updates for the router
   function subscribe(fn) {
     subscribers.add(fn);
     return function () {
       return subscribers.delete(fn);
     };
-  } // Update our state and notify the calling context of the change
-
+  }
+  // Update our state and notify the calling context of the change
   function updateState(newState) {
     state = _extends({}, state, newState);
     subscribers.forEach(function (subscriber) {
       return subscriber(state);
     });
-  } // Complete a navigation returning the state.navigation back to the IDLE_NAVIGATION
+  }
+  // Complete a navigation returning the state.navigation back to the IDLE_NAVIGATION
   // and setting state.[historyAction/location/matches] to the new route.
   // - Location is a required param
   // - Navigation will always be set to IDLE_NAVIGATION
   // - Can pass any other state in newState
-
   function completeNavigation(location, newState) {
     var _location$state, _location$state2;
-
     // Deduce if we're in a loading/actionReload state:
     // - We have committed actionData in the store
     // - The current navigation was a mutation submission
@@ -4234,9 +4218,10 @@ function createRouter(init) {
     } else {
       // Clear actionData on any other completed navigations
       actionData = null;
-    } // Always preserve any existing loaderData from re-used routes
-
-    var loaderData = newState.loaderData ? mergeLoaderData(state.loaderData, newState.loaderData, newState.matches || [], newState.errors) : state.loaderData; // On a successful navigation we can assume we got through all blockers
+    }
+    // Always preserve any existing loaderData from re-used routes
+    var loaderData = newState.loaderData ? mergeLoaderData(state.loaderData, newState.loaderData, newState.matches || [], newState.errors) : state.loaderData;
+    // On a successful navigation we can assume we got through all blockers
     // so we can start fresh
     var _iterator2 = _createForOfIteratorHelper(blockerFunctions),
       _step2;
@@ -4245,7 +4230,8 @@ function createRouter(init) {
         var _step2$value = _slicedToArray(_step2.value, 1),
           key = _step2$value[0];
         deleteBlocker(key);
-      } // Always respect the user flag.  Otherwise don't reset on mutation
+      }
+      // Always respect the user flag.  Otherwise don't reset on mutation
       // submission navigations unless they redirect
     } catch (err) {
       _iterator2.e(err);
@@ -4273,15 +4259,16 @@ function createRouter(init) {
       init.history.push(location, location.state);
     } else if (pendingAction === Action.Replace) {
       init.history.replace(location, location.state);
-    } // Reset stateful navigation vars
-
+    }
+    // Reset stateful navigation vars
     pendingAction = Action.Pop;
     pendingPreventScrollReset = false;
     isUninterruptedRevalidation = false;
     isRevalidationRequired = false;
     cancelledDeferredRoutes = [];
     cancelledFetcherLoads = [];
-  } // Trigger a navigation event, which can either be a numerical POP or a PUSH
+  }
+  // Trigger a navigation event, which can either be a numerical POP or a PUSH
   // replace with an optional submission
   function navigate(_x3, _x4) {
     return _navigate.apply(this, arguments);
@@ -4341,8 +4328,8 @@ function createRouter(init) {
                   proceed: undefined,
                   reset: undefined,
                   location: nextLocation
-                }); // Send the same navigation through
-
+                });
+                // Send the same navigation through
                 navigate(to, opts);
               },
               reset: function reset() {
@@ -4377,28 +4364,29 @@ function createRouter(init) {
     interruptActiveLoads();
     updateState({
       revalidation: "loading"
-    }); // If we're currently submitting an action, we don't need to start a new
+    });
+    // If we're currently submitting an action, we don't need to start a new
     // navigation, we'll just let the follow up loader execution call all loaders
-
     if (state.navigation.state === "submitting") {
       return;
-    } // If we're currently in an idle state, start a new navigation for the current
+    }
+    // If we're currently in an idle state, start a new navigation for the current
     // action/location and mark it as uninterrupted, which will skip the history
     // update in completeNavigation
-
     if (state.navigation.state === "idle") {
       startNavigation(state.historyAction, state.location, {
         startUninterruptedRevalidation: true
       });
       return;
-    } // Otherwise, if we're currently in a loading state, just start a new
+    }
+    // Otherwise, if we're currently in a loading state, just start a new
     // navigation to the navigation.location but do not trigger an uninterrupted
     // revalidation so that history correctly updates once the navigation completes
-
     startNavigation(pendingAction || state.historyAction, state.navigation.location, {
       overrideNavigation: state.navigation
     });
-  } // Start a navigation to the given action/location.  Can optionally provide a
+  }
+  // Start a navigation to the given action/location.  Can optionally provide a
   // overrideNavigation which will override the normalLoad in the case of a redirect
   // navigation
   function startNavigation(_x5, _x6, _x7) {
@@ -4417,9 +4405,9 @@ function createRouter(init) {
             pendingNavigationController && pendingNavigationController.abort();
             pendingNavigationController = null;
             pendingAction = historyAction;
-            isUninterruptedRevalidation = (opts && opts.startUninterruptedRevalidation) === true; // Save the current scroll position every time we start a new navigation,
+            isUninterruptedRevalidation = (opts && opts.startUninterruptedRevalidation) === true;
+            // Save the current scroll position every time we start a new navigation,
             // and track whether we should reset scroll on completion
-
             saveScrollPosition(state.location, state.matches);
             pendingPreventScrollReset = (opts && opts.preventScrollReset) === true;
             routesToUse = inFlightDataRoutes || dataRoutes;
@@ -4441,7 +4429,7 @@ function createRouter(init) {
             });
             return _context3.abrupt("return");
           case 15:
-            if (!(state.initialized && isHashChangeOnly(state.location, location) && !(opts && opts.submission && isMutationMethod(opts.submission.formMethod)))) {
+            if (!(state.initialized && !isRevalidationRequired && isHashChangeOnly(state.location, location) && !(opts && opts.submission && isMutationMethod(opts.submission.formMethod)))) {
               _context3.next = 18;
               break;
             }
@@ -4451,7 +4439,6 @@ function createRouter(init) {
             return _context3.abrupt("return");
           case 18:
             // Create a controller/Request for this navigation
-
             pendingNavigationController = new AbortController();
             request = createClientSideRequest(init.history, location, pendingNavigationController.signal, opts && opts.submission);
             if (!(opts && opts.pendingError)) {
@@ -4488,8 +4475,8 @@ function createRouter(init) {
               state: "loading",
               location: location
             }, opts.submission);
-            loadingNavigation = navigation; // Create a GET request for the loaders
-
+            loadingNavigation = navigation;
+            // Create a GET request for the loaders
             request = new Request(request.url, {
               signal: request.signal
             });
@@ -4510,7 +4497,6 @@ function createRouter(init) {
             // Clean up now that the action/loaders have completed.  Don't clean up if
             // we short circuited because pendingNavigationController will have already
             // been assigned to a new controller for the next navigation
-
             pendingNavigationController = null;
             completeNavigation(location, _extends({
               matches: matches
@@ -4538,14 +4524,16 @@ function createRouter(init) {
       return _regeneratorRuntime().wrap(function _callee4$(_context4) {
         while (1) switch (_context4.prev = _context4.next) {
           case 0:
-            interruptActiveLoads(); // Put us in a submitting state
+            interruptActiveLoads();
+            // Put us in a submitting state
             navigation = _extends({
               state: "submitting",
               location: location
             }, submission);
             updateState({
               navigation: navigation
-            }); // Call our action and get the result
+            });
+            // Call our action and get the result
             actionMatch = getTargetMatch(matches, location);
             if (!(!actionMatch.route.action && !actionMatch.route.lazy)) {
               _context4.next = 8;
@@ -4655,7 +4643,8 @@ function createRouter(init) {
                 formData: undefined
               }, submission);
               loadingNavigation = navigation;
-            } // If this was a redirect from an action we don't have a "submission" but
+            }
+            // If this was a redirect from an action we don't have a "submission" but
             // we have it on the loading navigation so use that if available
             activeSubmission = submission || fetcherSubmission ? submission || fetcherSubmission : loadingNavigation.formMethod && loadingNavigation.formAction && loadingNavigation.formData && loadingNavigation.formEncType ? {
               formMethod: loadingNavigation.formMethod,
@@ -4673,7 +4662,8 @@ function createRouter(init) {
               })) || matchesToLoad && matchesToLoad.some(function (m) {
                 return m.route.id === routeId;
               });
-            }); // Short circuit if we have no loaders to run
+            });
+            // Short circuit if we have no loaders to run
             if (!(matchesToLoad.length === 0 && revalidatingFetchers.length === 0)) {
               _context5.next = 10;
               break;
@@ -4697,7 +4687,6 @@ function createRouter(init) {
             // state.  If not, we need to switch to our loading state and load data,
             // preserving any new action data or existing action data (in the case of
             // a revalidation interrupting an actionReload)
-
             if (!isUninterruptedRevalidation) {
               revalidatingFetchers.forEach(function (rf) {
                 var fetcher = state.fetchers.get(rf.key);
@@ -4731,7 +4720,8 @@ function createRouter(init) {
                 // triggered the revalidation
                 fetchControllers.set(rf.key, rf.controller);
               }
-            }); // Proxy navigation abort through to revalidation fetchers
+            });
+            // Proxy navigation abort through to revalidation fetchers
             abortPendingFetchRevalidations = function abortPendingFetchRevalidations() {
               return revalidatingFetchers.forEach(function (f) {
                 return abortFetcher(f.key);
@@ -4758,13 +4748,13 @@ function createRouter(init) {
             // Clean up _after_ loaders have completed.  Don't clean up if we short
             // circuited because fetchControllers would have been aborted and
             // reassigned to new controllers for the next navigation
-
             if (pendingNavigationController) {
               pendingNavigationController.signal.removeEventListener("abort", abortPendingFetchRevalidations);
             }
             revalidatingFetchers.forEach(function (rf) {
               return fetchControllers.delete(rf.key);
-            }); // If any loaders returned a redirect Response, start a new REPLACE navigation
+            });
+            // If any loaders returned a redirect Response, start a new REPLACE navigation
             redirect = findRedirect(results);
             if (!redirect) {
               _context5.next = 30;
@@ -4810,8 +4800,8 @@ function createRouter(init) {
   }
   function getFetcher(key) {
     return state.fetchers.get(key) || IDLE_FETCHER;
-  } // Trigger a fetcher load/submit for the given fetcher key
-
+  }
+  // Trigger a fetcher load/submit for the given fetcher key
   function fetch(key, routeId, href, opts) {
     if (isServer) {
       throw new Error("router.fetch() was called during the server render, but it shouldn't be. " + "You are likely calling a useFetcher() method in the body of your component. " + "Try moving it to a useEffect or a callback.");
@@ -4834,15 +4824,16 @@ function createRouter(init) {
     if (submission && isMutationMethod(submission.formMethod)) {
       handleFetcherAction(key, routeId, path, match, matches, submission);
       return;
-    } // Store off the match so we can call it's shouldRevalidate on subsequent
+    }
+    // Store off the match so we can call it's shouldRevalidate on subsequent
     // revalidations
-
     fetchLoadMatches.set(key, {
       routeId: routeId,
       path: path
     });
     handleFetcherLoader(key, routeId, path, match, matches, submission);
-  } // Call the action for the matched fetcher.submit(), and then handle redirects,
+  }
+  // Call the action for the matched fetcher.submit(), and then handle redirects,
   // errors, and revalidation
   function handleFetcherAction(_x22, _x23, _x24, _x25, _x26, _x27) {
     return _handleFetcherAction.apply(this, arguments);
@@ -4878,7 +4869,8 @@ function createRouter(init) {
             state.fetchers.set(key, fetcher);
             updateState({
               fetchers: new Map(state.fetchers)
-            }); // Call the action for the fetcher
+            });
+            // Call the action for the fetcher
             abortController = new AbortController();
             fetchRequest = createClientSideRequest(init.history, path, abortController.signal, submission);
             fetchControllers.set(key, abortController);
@@ -5008,17 +5000,20 @@ function createRouter(init) {
             return _context6.abrupt("return", startRedirectNavigation(state, redirect));
           case 60:
             // Process and commit output from loaders
-            _processLoaderData2 = processLoaderData(state, state.matches, matchesToLoad, loaderResults, undefined, revalidatingFetchers, fetcherResults, activeDeferreds), loaderData = _processLoaderData2.loaderData, errors = _processLoaderData2.errors;
-            doneFetcher = {
-              state: "idle",
-              data: actionResult.data,
-              formMethod: undefined,
-              formAction: undefined,
-              formEncType: undefined,
-              formData: undefined,
-              " _hasFetcherDoneAnything ": true
-            };
-            state.fetchers.set(key, doneFetcher);
+            _processLoaderData2 = processLoaderData(state, state.matches, matchesToLoad, loaderResults, undefined, revalidatingFetchers, fetcherResults, activeDeferreds), loaderData = _processLoaderData2.loaderData, errors = _processLoaderData2.errors; // Since we let revalidations complete even if the submitting fetcher was
+            // deleted, only put it back to idle if it hasn't been deleted
+            if (state.fetchers.has(key)) {
+              doneFetcher = {
+                state: "idle",
+                data: actionResult.data,
+                formMethod: undefined,
+                formAction: undefined,
+                formEncType: undefined,
+                formData: undefined,
+                " _hasFetcherDoneAnything ": true
+              };
+              state.fetchers.set(key, doneFetcher);
+            }
             didAbortFetchLoads = abortStaleFetchLoads(loadId); // If we are currently in a navigation loading state and this fetcher is
             // more recent than the navigation, we want the newer data so abort the
             // navigation and complete it with the fetcher data
@@ -5038,12 +5033,12 @@ function createRouter(init) {
               updateState(_extends({
                 errors: errors,
                 loaderData: mergeLoaderData(state.loaderData, loaderData, matches, errors)
-              }, didAbortFetchLoads ? {
+              }, didAbortFetchLoads || revalidatingFetchers.length > 0 ? {
                 fetchers: new Map(state.fetchers)
               } : {}));
               isRevalidationRequired = false;
             }
-          case 65:
+          case 64:
           case "end":
             return _context6.stop();
         }
@@ -5093,7 +5088,8 @@ function createRouter(init) {
             state.fetchers.set(key, loadingFetcher);
             updateState({
               fetchers: new Map(state.fetchers)
-            }); // Call the loader for this fetcher route match
+            });
+            // Call the loader for this fetcher route match
             abortController = new AbortController();
             fetchRequest = createClientSideRequest(init.history, path, abortController.signal);
             fetchControllers.set(key, abortController);
@@ -5119,7 +5115,6 @@ function createRouter(init) {
           case 17:
             // We can delete this so long as we weren't aborted by our our own fetcher
             // re-load which would have put _new_ controller is in fetchControllers
-
             if (fetchControllers.get(key) === abortController) {
               fetchControllers.delete(key);
             }
@@ -5144,17 +5139,18 @@ function createRouter(init) {
               break;
             }
             boundaryMatch = findNearestBoundary(state.matches, routeId);
-            state.fetchers.delete(key); // TODO: In remix, this would reset to IDLE_NAVIGATION if it was a catch -
+            state.fetchers.delete(key);
+            // TODO: In remix, this would reset to IDLE_NAVIGATION if it was a catch -
             // do we need to behave any differently with our non-redirect errors?
             // What if it was a non-redirect Response?
-
             updateState({
               fetchers: new Map(state.fetchers),
               errors: _defineProperty({}, boundaryMatch.route.id, result.error)
             });
             return _context7.abrupt("return");
           case 30:
-            invariant(!isDeferredResult(result), "Unhandled fetcher deferred data"); // Put the fetcher back into an idle state
+            invariant(!isDeferredResult(result), "Unhandled fetcher deferred data");
+            // Put the fetcher back into an idle state
             doneFetcher = {
               state: "idle",
               data: result.data,
@@ -5181,7 +5177,7 @@ function createRouter(init) {
   }
   function _startRedirectNavigation() {
     _startRedirectNavigation = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee8(state, redirect, _temp) {
-      var _window, _ref6, submission, replace, isFetchActionRedirect, redirectLocation, url, isDifferentBasename, redirectHistoryAction, _state$navigation, formMethod, formAction, formEncType, formData;
+      var _ref6, submission, replace, isFetchActionRedirect, redirectLocation, url, isDifferentBasename, redirectHistoryAction, _state$navigation, formMethod, formAction, formEncType, formData;
       return _regeneratorRuntime().wrap(function _callee8$(_context8) {
         while (1) switch (_context8.prev = _context8.next) {
           case 0:
@@ -5196,27 +5192,27 @@ function createRouter(init) {
             }, isFetchActionRedirect ? {
               _isFetchActionRedirect: true
             } : {}));
-            invariant(redirectLocation, "Expected a location on the redirect navigation"); // Check if this an absolute external redirect that goes to a new origin
-            if (!(ABSOLUTE_URL_REGEX.test(redirect.location) && isBrowser && typeof ((_window = window) == null ? void 0 : _window.location) !== "undefined")) {
+            invariant(redirectLocation, "Expected a location on the redirect navigation");
+            // Check if this an absolute external redirect that goes to a new origin
+            if (!(ABSOLUTE_URL_REGEX.test(redirect.location) && isBrowser)) {
               _context8.next = 10;
               break;
             }
             url = init.history.createURL(redirect.location);
             isDifferentBasename = stripBasename(url.pathname, basename) == null;
-            if (!(window.location.origin !== url.origin || isDifferentBasename)) {
+            if (!(routerWindow.location.origin !== url.origin || isDifferentBasename)) {
               _context8.next = 10;
               break;
             }
             if (replace) {
-              window.location.replace(redirect.location);
+              routerWindow.location.replace(redirect.location);
             } else {
-              window.location.assign(redirect.location);
+              routerWindow.location.assign(redirect.location);
             }
             return _context8.abrupt("return");
           case 10:
             // There's no need to abort on redirects, since we don't detect the
             // redirect until the action/loaders have settled
-
             pendingNavigationController = null;
             redirectHistoryAction = replace === true ? Action.Replace : Action.Push; // Use the incoming submission if provided, fallback on the active one in
             // state.navigation
@@ -5228,7 +5224,8 @@ function createRouter(init) {
                 formEncType: formEncType,
                 formData: formData
               };
-            } // If this was a 307/308 submission we want to preserve the HTTP method and
+            }
+            // If this was a 307/308 submission we want to preserve the HTTP method and
             // re-submit the GET/POST/PUT/PATCH/DELETE as a submission navigation to the
             // redirected location
             if (!(redirectPreserveMethodStatusCodes.has(redirect.status) && submission && isMutationMethod(submission.formMethod))) {
@@ -5344,11 +5341,11 @@ function createRouter(init) {
   function interruptActiveLoads() {
     var _cancelledDeferredRou;
     // Every interruption triggers a revalidation
-    isRevalidationRequired = true; // Cancel pending route-level deferreds and mark cancelled routes for
+    isRevalidationRequired = true;
+    // Cancel pending route-level deferreds and mark cancelled routes for
     // revalidation
-
-    (_cancelledDeferredRou = cancelledDeferredRoutes).push.apply(_cancelledDeferredRou, _toConsumableArray(cancelActiveDeferreds())); // Abort in-flight fetcher loads
-
+    (_cancelledDeferredRou = cancelledDeferredRoutes).push.apply(_cancelledDeferredRou, _toConsumableArray(cancelActiveDeferreds()));
+    // Abort in-flight fetcher loads
     fetchLoadMatches.forEach(function (_, key) {
       if (fetchControllers.has(key)) {
         cancelledFetcherLoads.push(key);
@@ -5365,7 +5362,13 @@ function createRouter(init) {
     });
   }
   function deleteFetcher(key) {
-    if (fetchControllers.has(key)) abortFetcher(key);
+    var fetcher = state.fetchers.get(key);
+    // Don't abort the controller if this is a deletion of a fetcher.submit()
+    // in it's loading phase since - we don't want to abort the corresponding
+    // revalidation and want them to complete and land
+    if (fetchControllers.has(key) && !(fetcher && fetcher.state === "loading" && fetchReloadIds.has(key))) {
+      abortFetcher(key);
+    }
     fetchLoadMatches.delete(key);
     fetchReloadIds.delete(key);
     fetchRedirectIds.delete(key);
@@ -5462,12 +5465,12 @@ function createRouter(init) {
   function deleteBlocker(key) {
     state.blockers.delete(key);
     blockerFunctions.delete(key);
-  } // Utility function to update blockers, ensuring valid state transitions
-
+  }
+  // Utility function to update blockers, ensuring valid state transitions
   function updateBlocker(key, newBlocker) {
-    var blocker = state.blockers.get(key) || IDLE_BLOCKER; // Poor mans state machine :)
+    var blocker = state.blockers.get(key) || IDLE_BLOCKER;
+    // Poor mans state machine :)
     // https://mermaid.live/edit#pako:eNqVkc9OwzAMxl8l8nnjAYrEtDIOHEBIgwvKJTReGy3_lDpIqO27k6awMG0XcrLlnz87nwdonESogKXXBuE79rq75XZO3-yHds0RJVuv70YrPlUrCEe2HfrORS3rubqZfuhtpg5C9wk5tZ4VKcRUq88q9Z8RS0-48cE1iHJkL0ugbHuFLus9L6spZy8nX9MP2CNdomVaposqu3fGayT8T8-jJQwhepo_UtpgBQaDEUom04dZhAN1aJBDlUKJBxE1ceB2Smj0Mln-IBW5AFU2dwUiktt_2Qaq2dBfaKdEup85UV7Yd-dKjlnkabl2Pvr0DTkTreM
-
     invariant(blocker.state === "unblocked" && newBlocker.state === "blocked" || blocker.state === "blocked" && newBlocker.state === "blocked" || blocker.state === "blocked" && newBlocker.state === "proceeding" || blocker.state === "blocked" && newBlocker.state === "unblocked" || blocker.state === "proceeding" && newBlocker.state === "unblocked", "Invalid blocker state transition: " + blocker.state + " -> " + newBlocker.state);
     state.blockers.set(key, newBlocker);
     updateState({
@@ -5480,9 +5483,9 @@ function createRouter(init) {
       historyAction = _ref2.historyAction;
     if (blockerFunctions.size === 0) {
       return;
-    } // We ony support a single active blocker at the moment since we don't have
+    }
+    // We ony support a single active blocker at the moment since we don't have
     // any compelling use cases for multi-blocker yet
-
     if (blockerFunctions.size > 1) {
       warning(false, "A router only supports one blocker at a time");
     }
@@ -5495,9 +5498,9 @@ function createRouter(init) {
       // If the blocker is currently proceeding, we don't need to re-check
       // it and can let this navigation continue
       return;
-    } // At this point, we know we're unblocked/blocked so we need to check the
+    }
+    // At this point, we know we're unblocked/blocked so we need to check the
     // user-provided blocker function
-
     if (blockerFunction({
       currentLocation: currentLocation,
       nextLocation: nextLocation,
@@ -5519,18 +5522,18 @@ function createRouter(init) {
       }
     });
     return cancelledRouteIds;
-  } // Opt in to capturing and reporting scroll positions during navigations,
+  }
+  // Opt in to capturing and reporting scroll positions during navigations,
   // used by the <ScrollRestoration> component
-
   function enableScrollRestoration(positions, getPosition, getKey) {
     savedScrollPositions = positions;
     getScrollPosition = getPosition;
     getScrollRestorationKey = getKey || function (location) {
       return location.key;
-    }; // Perform initial hydration scroll restoration, since we miss the boat on
+    };
+    // Perform initial hydration scroll restoration, since we miss the boat on
     // the initial updateState() because we've not yet rendered <ScrollRestoration/>
     // and therefore have no savedScrollPositions available
-
     if (!initialScrollRestored && state.navigation === IDLE_NAVIGATION) {
       initialScrollRestored = true;
       var y = getSavedScrollPosition(state.location, state.matches);
@@ -5608,11 +5611,11 @@ function createRouter(init) {
     _internalSetRoutes: _internalSetRoutes
   };
   return router;
-} //#endregion
+}
+//#endregion
 ////////////////////////////////////////////////////////////////////////////////
 //#region createStaticHandler
 ////////////////////////////////////////////////////////////////////////////////
-
 var UNSAFE_DEFERRED_SYMBOL = Symbol("deferred");
 exports.UNSAFE_DEFERRED_SYMBOL = UNSAFE_DEFERRED_SYMBOL;
 function createStaticHandler(routes, opts) {
@@ -6118,16 +6121,15 @@ function createStaticHandler(routes, opts) {
     query: query,
     queryRoute: queryRoute
   };
-} //#endregion
+}
+//#endregion
 ////////////////////////////////////////////////////////////////////////////////
 //#region Helpers
 ////////////////////////////////////////////////////////////////////////////////
-
 /**
  * Given an existing StaticHandlerContext and an error thrown at render time,
  * provide an updated StaticHandlerContext suitable for a second SSR render
  */
-
 function getStaticContextFromError(routes, context, error) {
   var newContext = _extends({}, context, {
     statusCode: 500,
@@ -6166,33 +6168,33 @@ function normalizeTo(location, matches, basename, prependBasename, to, fromRoute
   } else {
     contextualMatches = matches;
     activeRouteMatch = matches[matches.length - 1];
-  } // Resolve the relative path
-
+  }
+  // Resolve the relative path
   var path = resolveTo(to ? to : ".", getPathContributingMatches(contextualMatches).map(function (m) {
     return m.pathnameBase;
-  }), stripBasename(location.pathname, basename) || location.pathname, relative === "path"); // When `to` is not specified we inherit search/hash from the current
+  }), stripBasename(location.pathname, basename) || location.pathname, relative === "path");
+  // When `to` is not specified we inherit search/hash from the current
   // location, unlike when to="." and we just inherit the path.
   // See https://github.com/remix-run/remix/issues/927
-
   if (to == null) {
     path.search = location.search;
     path.hash = location.hash;
-  } // Add an ?index param for matched index routes if we don't already have one
-
+  }
+  // Add an ?index param for matched index routes if we don't already have one
   if ((to == null || to === "" || to === ".") && activeRouteMatch && activeRouteMatch.route.index && !hasNakedIndexQuery(path.search)) {
     path.search = path.search ? path.search.replace(/^\?/, "?index&") : "?index";
-  } // If we're operating within a basename, prepend it to the pathname.  If
+  }
+  // If we're operating within a basename, prepend it to the pathname.  If
   // this is a root navigation, then just use the raw basename which allows
   // the basename to have full control over the presence of a trailing slash
   // on root actions
-
   if (prependBasename && basename !== "/") {
     path.pathname = path.pathname === "/" ? basename : joinPaths([basename, path.pathname]);
   }
   return createPath(path);
-} // Normalize navigation options by converting formMethod=GET formData objects to
+}
+// Normalize navigation options by converting formMethod=GET formData objects to
 // URLSearchParams so they behave identically to links with query params
-
 function normalizeNavigateOptions(normalizeFormMethod, isFetcher, path, opts) {
   // Return location verbatim on non-submission navigations
   if (!opts || !isSubmissionNavigation(opts)) {
@@ -6207,8 +6209,8 @@ function normalizeNavigateOptions(normalizeFormMethod, isFetcher, path, opts) {
         method: opts.formMethod
       })
     };
-  } // Create a Submission on non-GET navigations
-
+  }
+  // Create a Submission on non-GET navigations
   var submission;
   if (opts.formData) {
     var formMethod = opts.formMethod || "get";
@@ -6224,13 +6226,13 @@ function normalizeNavigateOptions(normalizeFormMethod, isFetcher, path, opts) {
         submission: submission
       };
     }
-  } // Flatten submission onto URLSearchParams for GET submissions
-
+  }
+  // Flatten submission onto URLSearchParams for GET submissions
   var parsedPath = parsePath(path);
-  var searchParams = convertFormDataToSearchParams(opts.formData); // On GET navigation submissions we can drop the ?index param from the
+  var searchParams = convertFormDataToSearchParams(opts.formData);
+  // On GET navigation submissions we can drop the ?index param from the
   // resulting location since all loaders will run.  But fetcher GET submissions
   // only run a single loader so we need to preserve any incoming ?index params
-
   if (isFetcher && parsedPath.search && hasNakedIndexQuery(parsedPath.search)) {
     searchParams.append("index", "");
   }
@@ -6239,9 +6241,9 @@ function normalizeNavigateOptions(normalizeFormMethod, isFetcher, path, opts) {
     path: createPath(parsedPath),
     submission: submission
   };
-} // Filter out all routes below any caught error as they aren't going to
+}
+// Filter out all routes below any caught error as they aren't going to
 // render so we don't need to load them
-
 function getLoaderMatchesUntilBoundary(matches, boundaryId) {
   var boundaryMatches = matches;
   if (boundaryId) {
@@ -6257,8 +6259,8 @@ function getLoaderMatchesUntilBoundary(matches, boundaryId) {
 function getMatchesToLoad(history, state, matches, submission, location, isRevalidationRequired, cancelledDeferredRoutes, cancelledFetcherLoads, fetchLoadMatches, routesToUse, basename, pendingActionData, pendingError) {
   var actionResult = pendingError ? Object.values(pendingError)[0] : pendingActionData ? Object.values(pendingActionData)[0] : undefined;
   var currentUrl = history.createURL(state.location);
-  var nextUrl = history.createURL(location); // Pick navigation matches that are net-new or qualify for revalidation
-
+  var nextUrl = history.createURL(location);
+  // Pick navigation matches that are net-new or qualify for revalidation
   var boundaryId = pendingError ? Object.keys(pendingError)[0] : undefined;
   var boundaryMatches = getLoaderMatchesUntilBoundary(matches, boundaryId);
   var navigationMatches = boundaryMatches.filter(function (match, index) {
@@ -6268,17 +6270,17 @@ function getMatchesToLoad(history, state, matches, submission, location, isReval
     }
     if (match.route.loader == null) {
       return false;
-    } // Always call the loader on new route instances and pending defer cancellations
-
+    }
+    // Always call the loader on new route instances and pending defer cancellations
     if (isNewLoader(state.loaderData, state.matches[index], match) || cancelledDeferredRoutes.some(function (id) {
       return id === match.route.id;
     })) {
       return true;
-    } // This is the default implementation for when we revalidate.  If the route
+    }
+    // This is the default implementation for when we revalidate.  If the route
     // provides it's own implementation, then we give them full control but
     // provide this value so they can leverage it if needed after they check
     // their own specific use cases
-
     var currentRouteMatch = state.matches[index];
     var nextRouteMatch = match;
     return shouldRevalidateLoader(match, _extends({
@@ -6296,8 +6298,8 @@ function getMatchesToLoad(history, state, matches, submission, location, isReval
       // Search params affect all loaders
       currentUrl.search !== nextUrl.search || isNewRouteInstance(currentRouteMatch, nextRouteMatch)
     }));
-  }); // Pick fetcher.loads that need to be revalidated
-
+  });
+  // Pick fetcher.loads that need to be revalidated
   var revalidatingFetchers = [];
   fetchLoadMatches.forEach(function (f, key) {
     // Don't revalidate if fetcher won't be present in the subsequent render
@@ -6306,9 +6308,9 @@ function getMatchesToLoad(history, state, matches, submission, location, isReval
     })) {
       return;
     }
-    var fetcherMatches = matchRoutes(routesToUse, f.path, basename); // If the fetcher path no longer matches, push it in with null matches so
+    var fetcherMatches = matchRoutes(routesToUse, f.path, basename);
+    // If the fetcher path no longer matches, push it in with null matches so
     // we can trigger a 404 in callLoadersAndMaybeResolveData
-
     if (!fetcherMatches) {
       revalidatingFetchers.push({
         key: key,
@@ -6331,11 +6333,11 @@ function getMatchesToLoad(history, state, matches, submission, location, isReval
         controller: new AbortController()
       });
       return;
-    } // Revalidating fetchers are decoupled from the route matches since they
+    }
+    // Revalidating fetchers are decoupled from the route matches since they
     // hit a static href, so they _always_ check shouldRevalidate and the
     // default is strictly if a revalidation is explicitly required (action
     // submissions, useRevalidator, X-Remix-Revalidate).
-
     var shouldRevalidate = shouldRevalidateLoader(fetcherMatch, _extends({
       currentUrl: currentUrl,
       currentParams: state.matches[state.matches.length - 1].params,
@@ -6364,11 +6366,11 @@ function isNewLoader(currentLoaderData, currentMatch, match) {
   // [a] -> [a, b]
   !currentMatch ||
   // [a, b] -> [a, c]
-  match.route.id !== currentMatch.route.id; // Handle the case that we don't have data for a re-used route, potentially
+  match.route.id !== currentMatch.route.id;
+  // Handle the case that we don't have data for a re-used route, potentially
   // from a prior error or from a cancelled pending deferred
-
-  var isMissingData = currentLoaderData[match.route.id] === undefined; // Always load if this is a net-new route or we don't yet have data
-
+  var isMissingData = currentLoaderData[match.route.id] === undefined;
+  // Always load if this is a net-new route or we don't yet have data
   return isNew || isMissingData;
 }
 function isNewRouteInstance(currentMatch, match) {
@@ -6421,7 +6423,8 @@ function _loadLazyRouteModule() {
           return _context16.abrupt("return");
         case 7:
           routeToUpdate = manifest[route.id];
-          invariant(routeToUpdate, "No route found in manifest"); // Update the route in place.  This should be safe because there's no way
+          invariant(routeToUpdate, "No route found in manifest");
+          // Update the route in place.  This should be safe because there's no way
           // we could yet be sitting on this route as we can't get there without
           // resolving lazy() first.
           //
@@ -6440,13 +6443,13 @@ function _loadLazyRouteModule() {
             if (!isPropertyStaticallyDefined && !immutableRouteKeys.has(lazyRouteProperty)) {
               routeUpdates[lazyRouteProperty] = lazyRoute[lazyRouteProperty];
             }
-          } // Mutate the route with the provided updates.  Do this first so we pass
+          }
+          // Mutate the route with the provided updates.  Do this first so we pass
           // the updated version to mapRouteProperties
-
-          Object.assign(routeToUpdate, routeUpdates); // Mutate the `hasErrorBoundary` property on the route based on the route
+          Object.assign(routeToUpdate, routeUpdates);
+          // Mutate the `hasErrorBoundary` property on the route based on the route
           // updates and remove the `lazy` function so we don't resolve the lazy
           // route again.
-
           Object.assign(routeToUpdate, _extends({}, mapRouteProperties(routeToUpdate), {
             lazy: undefined
           }));
@@ -6584,8 +6587,8 @@ function _callLoaderOrAction() {
             break;
           }
           location = result.headers.get("Location");
-          invariant(location, "Redirects returned/thrown from loaders/actions must have a Location header"); // Support relative routing in internal redirects
-
+          invariant(location, "Redirects returned/thrown from loaders/actions must have a Location header");
+          // Support relative routing in internal redirects
           if (!ABSOLUTE_URL_REGEX.test(location)) {
             location = normalizeTo(new URL(request.url), matches.slice(0, matches.indexOf(match) + 1), basename, true, location);
           } else if (!isStaticRequest) {
@@ -6598,7 +6601,8 @@ function _callLoaderOrAction() {
             if (_url2.origin === currentUrl.origin && isSameBasename) {
               location = _url2.pathname + _url2.search + _url2.hash;
             }
-          } // Don't process redirects in the router during static requests requests.
+          }
+          // Don't process redirects in the router during static requests requests.
           // Instead, throw the Response and let the server handle it with an HTTP
           // redirect.  We also update the Location header in place in this flow so
           // basename and relative routing is taken into account
@@ -6700,14 +6704,14 @@ function createClientSideRequest(history, location, signal, submission) {
   if (submission && isMutationMethod(submission.formMethod)) {
     var formMethod = submission.formMethod,
       formEncType = submission.formEncType,
-      formData = submission.formData; // Didn't think we needed this but it turns out unlike other methods, patch
+      formData = submission.formData;
+    // Didn't think we needed this but it turns out unlike other methods, patch
     // won't be properly normalized to uppercase and results in a 405 error.
     // See: https://fetch.spec.whatwg.org/#concept-method
-
     init.method = formMethod.toUpperCase();
     init.body = formEncType === "application/x-www-form-urlencoded" ? convertFormDataToSearchParams(formData) : formData;
-  } // Content-Type is inferred (https://fetch.spec.whatwg.org/#dom-request)
-
+  }
+  // Content-Type is inferred (https://fetch.spec.whatwg.org/#dom-request)
   return new Request(url, init);
 }
 function convertFormDataToSearchParams(formData) {
@@ -6735,8 +6739,8 @@ function processRouteLoaderData(matches, matchesToLoad, results, pendingError, a
   var errors = null;
   var statusCode;
   var foundError = false;
-  var loaderHeaders = {}; // Process loader results into state.loaderData/state.errors
-
+  var loaderHeaders = {};
+  // Process loader results into state.loaderData/state.errors
   results.forEach(function (result, index) {
     var id = matchesToLoad[index].route.id;
     invariant(!isRedirectResult(result), "Cannot handle redirect results in processLoaderData");
@@ -6744,23 +6748,23 @@ function processRouteLoaderData(matches, matchesToLoad, results, pendingError, a
       // Look upwards from the matched route for the closest ancestor
       // error boundary, defaulting to the root match
       var boundaryMatch = findNearestBoundary(matches, id);
-      var error = result.error; // If we have a pending action error, we report it at the highest-route
+      var error = result.error;
+      // If we have a pending action error, we report it at the highest-route
       // that throws a loader error, and then clear it out to indicate that
       // it was consumed
-
       if (pendingError) {
         error = Object.values(pendingError)[0];
         pendingError = undefined;
       }
-      errors = errors || {}; // Prefer higher error values if lower errors bubble to the same boundary
-
+      errors = errors || {};
+      // Prefer higher error values if lower errors bubble to the same boundary
       if (errors[boundaryMatch.route.id] == null) {
         errors[boundaryMatch.route.id] = error;
-      } // Clear our any prior loaderData for the throwing route
-
-      loaderData[id] = undefined; // Once we find our first (highest) error, we set the status code and
+      }
+      // Clear our any prior loaderData for the throwing route
+      loaderData[id] = undefined;
+      // Once we find our first (highest) error, we set the status code and
       // prevent deeper status codes from overriding
-
       if (!foundError) {
         foundError = true;
         statusCode = isRouteErrorResponse(result.error) ? result.error.status : 500;
@@ -6774,9 +6778,9 @@ function processRouteLoaderData(matches, matchesToLoad, results, pendingError, a
         loaderData[id] = result.deferredData.data;
       } else {
         loaderData[id] = result.data;
-      } // Error status codes always override success status codes, but if all
+      }
+      // Error status codes always override success status codes, but if all
       // loaders are successful we take the deepest status code.
-
       if (result.statusCode != null && result.statusCode !== 200 && !foundError) {
         statusCode = result.statusCode;
       }
@@ -6784,10 +6788,10 @@ function processRouteLoaderData(matches, matchesToLoad, results, pendingError, a
         loaderHeaders[id] = result.headers;
       }
     }
-  }); // If we didn't consume the pending action error (i.e., all loaders
+  });
+  // If we didn't consume the pending action error (i.e., all loaders
   // resolved), then consume it here.  Also clear out any loaderData for the
   // throwing route
-
   if (pendingError) {
     errors = pendingError;
     loaderData[Object.keys(pendingError)[0]] = undefined;
@@ -6802,16 +6806,16 @@ function processRouteLoaderData(matches, matchesToLoad, results, pendingError, a
 function processLoaderData(state, matches, matchesToLoad, results, pendingError, revalidatingFetchers, fetcherResults, activeDeferreds) {
   var _processRouteLoaderDa = processRouteLoaderData(matches, matchesToLoad, results, pendingError, activeDeferreds),
     loaderData = _processRouteLoaderDa.loaderData,
-    errors = _processRouteLoaderDa.errors; // Process results from our revalidating fetchers
-
+    errors = _processRouteLoaderDa.errors;
+  // Process results from our revalidating fetchers
   for (var index = 0; index < revalidatingFetchers.length; index++) {
     var _revalidatingFetchers = revalidatingFetchers[index],
       key = _revalidatingFetchers.key,
       match = _revalidatingFetchers.match,
       controller = _revalidatingFetchers.controller;
     invariant(fetcherResults !== undefined && fetcherResults[index] !== undefined, "Did not find corresponding fetcher result");
-    var result = fetcherResults[index]; // Process fetcher non-redirect errors
-
+    var result = fetcherResults[index];
+    // Process fetcher non-redirect errors
     if (controller && controller.signal.aborted) {
       // Nothing to do for aborted fetchers
       continue;
@@ -6875,10 +6879,10 @@ function mergeLoaderData(loaderData, newLoaderData, matches, errors) {
     _iterator8.f();
   }
   return mergedLoaderData;
-} // Find the nearest error boundary, looking upwards from the leaf route (or the
+}
+// Find the nearest error boundary, looking upwards from the leaf route (or the
 // route specified by routeId) for the closest ancestor error boundary,
 // defaulting to the root match
-
 function findNearestBoundary(matches, routeId) {
   var eligibleMatches = routeId ? matches.slice(0, matches.findIndex(function (m) {
     return m.route.id === routeId;
@@ -6934,8 +6938,8 @@ function getInternalRouterError(status, _temp4) {
     }
   }
   return new ErrorResponse(status || 500, statusText, new Error(errorMessage), true);
-} // Find any returned redirect errors, starting from the lowest match
-
+}
+// Find any returned redirect errors, starting from the lowest match
 function findRedirect(results) {
   for (var i = results.length - 1; i >= 0; i--) {
     var result = results[i];
@@ -6963,9 +6967,9 @@ function isHashChangeOnly(a, b) {
   } else if (b.hash !== "") {
     // /page#hash -> /page#other
     return true;
-  } // If the hash is removed the browser will re-perform a request to the server
+  }
+  // If the hash is removed the browser will re-perform a request to the server
   // /page#hash -> /page
-
   return false;
 }
 function isDeferredResult(result) {
@@ -7131,9 +7135,9 @@ function hasNakedIndexQuery(search) {
   return new URLSearchParams(search).getAll("index").some(function (v) {
     return v === "";
   });
-} // Note: This should match the format exported by useMatches, so if you change
+}
+// Note: This should match the format exported by useMatches, so if you change
 // this please also change that :)  Eventually we'll DRY this up
-
 function createUseMatchesMatch(match, loaderData) {
   var route = match.route,
     pathname = match.pathname,
@@ -7151,12 +7155,13 @@ function getTargetMatch(matches, location) {
   if (matches[matches.length - 1].route.index && hasNakedIndexQuery(search || "")) {
     // Return the leaf index route when index is present
     return matches[matches.length - 1];
-  } // Otherwise grab the deepest "path contributing" match (ignoring index and
+  }
+  // Otherwise grab the deepest "path contributing" match (ignoring index and
   // pathless layout routes)
-
   var pathMatches = getPathContributingMatches(matches);
   return pathMatches[pathMatches.length - 1];
-} //#endregion
+}
+//#endregion
 },{}],"node_modules/react-router/dist/index.js":[function(require,module,exports) {
 "use strict";
 
@@ -7298,7 +7303,7 @@ function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) ===
 function _assertThisInitialized(self) { if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
 function _isNativeReflectConstruct() { if (typeof Reflect === "undefined" || !Reflect.construct) return false; if (Reflect.construct.sham) return false; if (typeof Proxy === "function") return true; try { Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function () {})); return true; } catch (e) { return false; } }
 function _getPrototypeOf(o) { _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function _getPrototypeOf(o) { return o.__proto__ || Object.getPrototypeOf(o); }; return _getPrototypeOf(o); } /**
-                                                                                                                                                                                                                      * React Router v6.11.2
+                                                                                                                                                                                                                      * React Router v6.12.0
                                                                                                                                                                                                                       *
                                                                                                                                                                                                                       * Copyright (c) Remix Software Inc.
                                                                                                                                                                                                                       *
@@ -7321,6 +7326,9 @@ function _extends() {
   };
   return _extends.apply(this, arguments);
 }
+
+// Create react-specific types from the agnostic types in @remix-run/router to
+// export from react-router
 var DataRouterContext = /*#__PURE__*/React.createContext(null);
 exports.UNSAFE_DataRouterContext = DataRouterContext;
 if ("development" !== "production") {
@@ -7335,6 +7343,17 @@ var AwaitContext = /*#__PURE__*/React.createContext(null);
 if ("development" !== "production") {
   AwaitContext.displayName = "Await";
 }
+
+/**
+ * A Navigator is a "location changer"; it's how you get to different locations.
+ *
+ * Every history instance conforms to the Navigator interface, but the
+ * distinction is useful primarily when it comes to the low-level <Router> API
+ * where both the location and a navigator must be provided separately in order
+ * to avoid "tearing" that may occur in a suspense-enabled app if the action
+ * and/or location were to be read directly from the history instance.
+ */
+
 var NavigationContext = /*#__PURE__*/React.createContext(null);
 exports.UNSAFE_NavigationContext = NavigationContext;
 if ("development" !== "production") {
@@ -7365,7 +7384,6 @@ if ("development" !== "production") {
  *
  * @see https://reactrouter.com/hooks/use-href
  */
-
 function useHref(to, _temp) {
   var _ref9 = _temp === void 0 ? {} : _temp,
     relative = _ref9.relative;
@@ -7382,11 +7400,12 @@ function useHref(to, _temp) {
     hash = _useResolvedPath.hash,
     pathname = _useResolvedPath.pathname,
     search = _useResolvedPath.search;
-  var joinedPathname = pathname; // If we're operating within a basename, prepend it to the pathname prior
+  var joinedPathname = pathname;
+
+  // If we're operating within a basename, prepend it to the pathname prior
   // to creating the href.  If this is a root navigation, then just use the raw
   // basename which allows the basename to have full control over the presence
   // of a trailing slash on root links
-
   if (basename !== "/") {
     joinedPathname = pathname === "/" ? basename : (0, _router.joinPaths)([basename, pathname]);
   }
@@ -7396,15 +7415,16 @@ function useHref(to, _temp) {
     hash: hash
   });
 }
+
 /**
  * Returns true if this component is a descendant of a <Router>.
  *
  * @see https://reactrouter.com/hooks/use-in-router-context
  */
-
 function useInRouterContext() {
   return React.useContext(LocationContext) != null;
 }
+
 /**
  * Returns the current location object, which represents the current URL in web
  * browsers.
@@ -7415,7 +7435,6 @@ function useInRouterContext() {
  *
  * @see https://reactrouter.com/hooks/use-location
  */
-
 function useLocation() {
   !useInRouterContext() ? "development" !== "production" ? (0, _router.UNSAFE_invariant)(false,
   // TODO: This error is probably because they somehow have 2 versions of the
@@ -7423,16 +7442,17 @@ function useLocation() {
   "useLocation() may be used only in the context of a <Router> component.") : (0, _router.UNSAFE_invariant)(false) : void 0;
   return React.useContext(LocationContext).location;
 }
+
 /**
  * Returns the current navigation action which describes how the router came to
  * the current location, either by a pop, push, or replace on the history stack.
  *
  * @see https://reactrouter.com/hooks/use-navigation-type
  */
-
 function useNavigationType() {
   return React.useContext(LocationContext).navigationType;
 }
+
 /**
  * Returns a PathMatch object if the given pattern matches the current URL.
  * This is useful for components that need to know "active" state, e.g.
@@ -7440,7 +7460,6 @@ function useNavigationType() {
  *
  * @see https://reactrouter.com/hooks/use-match
  */
-
 function useMatch(pattern) {
   !useInRouterContext() ? "development" !== "production" ? (0, _router.UNSAFE_invariant)(false,
   // TODO: This error is probably because they somehow have 2 versions of the
@@ -7452,12 +7471,14 @@ function useMatch(pattern) {
     return (0, _router.matchPath)(pattern, pathname);
   }, [pathname, pattern]);
 }
+
 /**
  * The interface for the navigate() function returned from useNavigate().
  */
 
-var navigateEffectWarning = "You should call navigate() in a React.useEffect(), not when " + "your component is first rendered."; // Mute warnings for calls to useNavigate in SSR environments
+var navigateEffectWarning = "You should call navigate() in a React.useEffect(), not when " + "your component is first rendered.";
 
+// Mute warnings for calls to useNavigate in SSR environments
 function useIsomorphicLayoutEffect(cb) {
   var isStatic = React.useContext(NavigationContext).static;
   if (!isStatic) {
@@ -7467,18 +7488,18 @@ function useIsomorphicLayoutEffect(cb) {
     React.useLayoutEffect(cb);
   }
 }
+
 /**
  * Returns an imperative method for changing the location. Used by <Link>s, but
  * may also be used by other elements to change the location.
  *
  * @see https://reactrouter.com/hooks/use-navigate
  */
-
 function useNavigate() {
   var _React$useContext2 = React.useContext(RouteContext),
-    isDataRoute = _React$useContext2.isDataRoute; // Conditional usage is OK here because the usage of a data router is static
+    isDataRoute = _React$useContext2.isDataRoute;
+  // Conditional usage is OK here because the usage of a data router is static
   // eslint-disable-next-line react-hooks/rules-of-hooks
-
   return isDataRoute ? useNavigateStable() : useNavigateUnstable();
 }
 function useNavigateUnstable() {
@@ -7505,21 +7526,23 @@ function useNavigateUnstable() {
     if (options === void 0) {
       options = {};
     }
-    "development" !== "production" ? (0, _router.UNSAFE_warning)(activeRef.current, navigateEffectWarning) : void 0; // Short circuit here since if this happens on first render the navigate
-    // is useless because we haven't wired up our history listener yet
+    "development" !== "production" ? (0, _router.UNSAFE_warning)(activeRef.current, navigateEffectWarning) : void 0;
 
+    // Short circuit here since if this happens on first render the navigate
+    // is useless because we haven't wired up our history listener yet
     if (!activeRef.current) return;
     if (typeof to === "number") {
       navigator.go(to);
       return;
     }
-    var path = (0, _router.resolveTo)(to, JSON.parse(routePathnamesJson), locationPathname, options.relative === "path"); // If we're operating within a basename, prepend it to the pathname prior
+    var path = (0, _router.resolveTo)(to, JSON.parse(routePathnamesJson), locationPathname, options.relative === "path");
+
+    // If we're operating within a basename, prepend it to the pathname prior
     // to handing off to history (but only if we're not in a data router,
     // otherwise it'll prepend the basename inside of the router).
     // If this is a root navigation, then we navigate to the raw basename
     // which allows the basename to have full control over the presence of a
     // trailing slash on root links
-
     if (dataRouterContext == null && basename !== "/") {
       path.pathname = path.pathname === "/" ? basename : (0, _router.joinPaths)([basename, path.pathname]);
     }
@@ -7528,22 +7551,22 @@ function useNavigateUnstable() {
   return navigate;
 }
 var OutletContext = /*#__PURE__*/React.createContext(null);
+
 /**
  * Returns the context (if provided) for the child route at this level of the route
  * hierarchy.
  * @see https://reactrouter.com/hooks/use-outlet-context
  */
-
 function useOutletContext() {
   return React.useContext(OutletContext);
 }
+
 /**
  * Returns the element for the child route at this level of the route
  * hierarchy. Used internally by <Outlet> to render child routes.
  *
  * @see https://reactrouter.com/hooks/use-outlet
  */
-
 function useOutlet(context) {
   var outlet = React.useContext(RouteContext).outlet;
   if (outlet) {
@@ -7553,25 +7576,25 @@ function useOutlet(context) {
   }
   return outlet;
 }
+
 /**
  * Returns an object of key/value pairs of the dynamic params from the current
  * URL that were matched by the route path.
  *
  * @see https://reactrouter.com/hooks/use-params
  */
-
 function useParams() {
   var _React$useContext5 = React.useContext(RouteContext),
     matches = _React$useContext5.matches;
   var routeMatch = matches[matches.length - 1];
   return routeMatch ? routeMatch.params : {};
 }
+
 /**
  * Resolves the pathname of the given `to` value against the current location.
  *
  * @see https://reactrouter.com/hooks/use-resolved-path
  */
-
 function useResolvedPath(to, _temp2) {
   var _ref10 = _temp2 === void 0 ? {} : _temp2,
     relative = _ref10.relative;
@@ -7586,6 +7609,7 @@ function useResolvedPath(to, _temp2) {
     return (0, _router.resolveTo)(to, JSON.parse(routePathnamesJson), locationPathname, relative === "path");
   }, [to, routePathnamesJson, locationPathname, relative]);
 }
+
 /**
  * Returns the element of the route that matched the current location, prepared
  * with the correct context to render the remainder of the route tree. Route
@@ -7594,11 +7618,11 @@ function useResolvedPath(to, _temp2) {
  *
  * @see https://reactrouter.com/hooks/use-routes
  */
-
 function useRoutes(routes, locationArg) {
   return useRoutesImpl(routes, locationArg);
-} // Internal implementation with accept optional param for RouterProvider usage
+}
 
+// Internal implementation with accept optional param for RouterProvider usage
 function useRoutesImpl(routes, locationArg, dataRouterState) {
   !useInRouterContext() ? "development" !== "production" ? (0, _router.UNSAFE_invariant)(false,
   // TODO: This error is probably because they somehow have 2 versions of the
@@ -7666,10 +7690,11 @@ function useRoutesImpl(routes, locationArg, dataRouterState) {
       // Re-encode pathnames that were decoded inside matchRoutes
       navigator.encodeLocation ? navigator.encodeLocation(match.pathnameBase).pathname : match.pathnameBase])
     });
-  }), parentMatches, dataRouterState); // When a user passes in a `locationArg`, the associated routes need to
+  }), parentMatches, dataRouterState);
+
+  // When a user passes in a `locationArg`, the associated routes need to
   // be wrapped in a new `LocationContext.Provider` in order for `useLocation`
   // to use the scoped location instead of the global location.
-
   if (locationArg && renderedMatches) {
     return /*#__PURE__*/React.createElement(LocationContext.Provider, {
       value: {
@@ -7770,11 +7795,12 @@ var RenderErrorBoundary = /*#__PURE__*/function (_React$Component) {
           location: props.location,
           revalidation: props.revalidation
         };
-      } // If we're not changing locations, preserve the location but still surface
+      }
+
+      // If we're not changing locations, preserve the location but still surface
       // any new errors that may come through. We retain the existing error, we do
       // this because the error provided from the app state may be cleared without
       // the location changing.
-
       return {
         error: props.error || state.error,
         location: state.location,
@@ -7788,9 +7814,10 @@ function RenderedRoute(_ref) {
   var routeContext = _ref.routeContext,
     match = _ref.match,
     children = _ref.children;
-  var dataRouterContext = React.useContext(DataRouterContext); // Track how deep we got in our render pass to emulate SSR componentDidCatch
-  // in a DataStaticRouter
+  var dataRouterContext = React.useContext(DataRouterContext);
 
+  // Track how deep we got in our render pass to emulate SSR componentDidCatch
+  // in a DataStaticRouter
   if (dataRouterContext && dataRouterContext.static && dataRouterContext.staticContext && (match.route.errorElement || match.route.ErrorBoundary)) {
     dataRouterContext.staticContext._deepestRenderedBoundaryId = match.route.id;
   }
@@ -7816,8 +7843,9 @@ function _renderMatches(matches, parentMatches, dataRouterState) {
       return null;
     }
   }
-  var renderedMatches = matches; // If we have data errors, trim matches to the highest error boundary
+  var renderedMatches = matches;
 
+  // If we have data errors, trim matches to the highest error boundary
   var errors = (_dataRouterState2 = dataRouterState) == null ? void 0 : _dataRouterState2.errors;
   if (errors != null) {
     var errorIndex = renderedMatches.findIndex(function (m) {
@@ -7827,8 +7855,8 @@ function _renderMatches(matches, parentMatches, dataRouterState) {
     renderedMatches = renderedMatches.slice(0, Math.min(renderedMatches.length, errorIndex + 1));
   }
   return renderedMatches.reduceRight(function (outlet, match, index) {
-    var error = match.route.id ? errors == null ? void 0 : errors[match.route.id] : null; // Only data routers handle errors
-
+    var error = match.route.id ? errors == null ? void 0 : errors[match.route.id] : null;
+    // Only data routers handle errors
     var errorElement = null;
     if (dataRouterState) {
       errorElement = match.route.errorElement || defaultErrorElement;
@@ -7860,10 +7888,10 @@ function _renderMatches(matches, parentMatches, dataRouterState) {
         },
         children: children
       });
-    }; // Only wrap in an error boundary within data router usages when we have an
+    };
+    // Only wrap in an error boundary within data router usages when we have an
     // ErrorBoundary/errorElement on this route.  Otherwise let it bubble up to
     // an ancestor ErrorBoundary/errorElement
-
     return dataRouterState && (match.route.ErrorBoundary || match.route.errorElement || index === 0) ? /*#__PURE__*/React.createElement(RenderErrorBoundary, {
       location: dataRouterState.location,
       revalidation: dataRouterState.revalidation,
@@ -7914,35 +7942,36 @@ function useRouteContext(hookName) {
   var route = React.useContext(RouteContext);
   !route ? "development" !== "production" ? (0, _router.UNSAFE_invariant)(false, getDataRouterConsoleError(hookName)) : (0, _router.UNSAFE_invariant)(false) : void 0;
   return route;
-} // Internal version with hookName-aware debugging
+}
 
+// Internal version with hookName-aware debugging
 function useCurrentRouteId(hookName) {
   var route = useRouteContext(hookName);
   var thisRoute = route.matches[route.matches.length - 1];
   !thisRoute.route.id ? "development" !== "production" ? (0, _router.UNSAFE_invariant)(false, hookName + " can only be used on routes that contain a unique \"id\"") : (0, _router.UNSAFE_invariant)(false) : void 0;
   return thisRoute.route.id;
 }
+
 /**
  * Returns the ID for the nearest contextual route
  */
-
 function useRouteId() {
   return useCurrentRouteId(DataRouterStateHook.UseRouteId);
 }
+
 /**
  * Returns the current navigation, defaulting to an "idle" navigation when
  * no navigation is in progress
  */
-
 function useNavigation() {
   var state = useDataRouterState(DataRouterStateHook.UseNavigation);
   return state.navigation;
 }
+
 /**
  * Returns a revalidate function for manually triggering revalidation, as well
  * as the current state of any manual revalidations
  */
-
 function useRevalidator() {
   var dataRouterContext = useDataRouterContext(DataRouterHook.UseRevalidator);
   var state = useDataRouterState(DataRouterStateHook.UseRevalidator);
@@ -7951,11 +7980,11 @@ function useRevalidator() {
     state: state.revalidation
   };
 }
+
 /**
  * Returns the active route matches, useful for accessing loaderData for
  * parent/child routes or the route "handle" property
  */
-
 function useMatches() {
   var _useDataRouterState = useDataRouterState(DataRouterStateHook.UseMatches),
     matches = _useDataRouterState.matches,
@@ -7963,10 +7992,10 @@ function useMatches() {
   return React.useMemo(function () {
     return matches.map(function (match) {
       var pathname = match.pathname,
-        params = match.params; // Note: This structure matches that created by createUseMatchesMatch
+        params = match.params;
+      // Note: This structure matches that created by createUseMatchesMatch
       // in the @remix-run/router , so if you change this please also change
       // that :)  Eventually we'll DRY this up
-
       return {
         id: match.route.id,
         pathname: pathname,
@@ -7977,10 +8006,10 @@ function useMatches() {
     });
   }, [matches, loaderData]);
 }
+
 /**
  * Returns the loader data for the nearest ancestor Route loader
  */
-
 function useLoaderData() {
   var state = useDataRouterState(DataRouterStateHook.UseLoaderData);
   var routeId = useCurrentRouteId(DataRouterStateHook.UseLoaderData);
@@ -7990,67 +8019,69 @@ function useLoaderData() {
   }
   return state.loaderData[routeId];
 }
+
 /**
  * Returns the loaderData for the given routeId
  */
-
 function useRouteLoaderData(routeId) {
   var state = useDataRouterState(DataRouterStateHook.UseRouteLoaderData);
   return state.loaderData[routeId];
 }
+
 /**
  * Returns the action data for the nearest ancestor Route action
  */
-
 function useActionData() {
   var state = useDataRouterState(DataRouterStateHook.UseActionData);
   var route = React.useContext(RouteContext);
   !route ? "development" !== "production" ? (0, _router.UNSAFE_invariant)(false, "useActionData must be used inside a RouteContext") : (0, _router.UNSAFE_invariant)(false) : void 0;
   return Object.values((state == null ? void 0 : state.actionData) || {})[0];
 }
+
 /**
  * Returns the nearest ancestor Route error, which could be a loader/action
  * error or a render error.  This is intended to be called from your
  * ErrorBoundary/errorElement to display a proper error message.
  */
-
 function useRouteError() {
   var _state$errors;
   var error = React.useContext(RouteErrorContext);
   var state = useDataRouterState(DataRouterStateHook.UseRouteError);
-  var routeId = useCurrentRouteId(DataRouterStateHook.UseRouteError); // If this was a render error, we put it in a RouteError context inside
-  // of RenderErrorBoundary
+  var routeId = useCurrentRouteId(DataRouterStateHook.UseRouteError);
 
+  // If this was a render error, we put it in a RouteError context inside
+  // of RenderErrorBoundary
   if (error) {
     return error;
-  } // Otherwise look for errors from our data router state
+  }
 
+  // Otherwise look for errors from our data router state
   return (_state$errors = state.errors) == null ? void 0 : _state$errors[routeId];
 }
+
 /**
  * Returns the happy-path data from the nearest ancestor <Await /> value
  */
-
 function useAsyncValue() {
   var value = React.useContext(AwaitContext);
   return value == null ? void 0 : value._data;
 }
+
 /**
  * Returns the error from the nearest ancestor <Await /> value
  */
-
 function useAsyncError() {
   var value = React.useContext(AwaitContext);
   return value == null ? void 0 : value._error;
 }
 var blockerId = 0;
+
 /**
  * Allow the application to block navigations within the SPA and present the
  * user a confirmation dialog to confirm the navigation.  Mostly used to avoid
  * using half-filled form data.  This does not handle hard-reloads or
  * cross-origin navigations.
  */
-
 function useBlocker(shouldBlock) {
   var _useDataRouterContext = useDataRouterContext(DataRouterHook.UseBlocker),
     router = _useDataRouterContext.router;
@@ -8063,22 +8094,24 @@ function useBlocker(shouldBlock) {
   var blockerFunction = React.useCallback(function (args) {
     return typeof shouldBlock === "function" ? !!shouldBlock(args) : !!shouldBlock;
   }, [shouldBlock]);
-  var blocker = router.getBlocker(blockerKey, blockerFunction); // Cleanup on unmount
+  var blocker = router.getBlocker(blockerKey, blockerFunction);
 
+  // Cleanup on unmount
   React.useEffect(function () {
     return function () {
       return router.deleteBlocker(blockerKey);
     };
-  }, [router, blockerKey]); // Prefer the blocker from state since DataRouterContext is memoized so this
-  // ensures we update on blocker state updates
+  }, [router, blockerKey]);
 
+  // Prefer the blocker from state since DataRouterContext is memoized so this
+  // ensures we update on blocker state updates
   return state.blockers.get(blockerKey) || blocker;
 }
+
 /**
  * Stable version of useNavigate that is used when we are in the context of
  * a RouterProvider.
  */
-
 function useNavigateStable() {
   var _useDataRouterContext2 = useDataRouterContext(DataRouterHook.UseNavigateStable),
     router = _useDataRouterContext2.router;
@@ -8091,9 +8124,10 @@ function useNavigateStable() {
     if (options === void 0) {
       options = {};
     }
-    "development" !== "production" ? (0, _router.UNSAFE_warning)(activeRef.current, navigateEffectWarning) : void 0; // Short circuit here since if this happens on first render the navigate
-    // is useless because we haven't wired up our router subscriber yet
+    "development" !== "production" ? (0, _router.UNSAFE_warning)(activeRef.current, navigateEffectWarning) : void 0;
 
+    // Short circuit here since if this happens on first render the navigate
+    // is useless because we haven't wired up our router subscriber yet
     if (!activeRef.current) return;
     if (typeof to === "number") {
       router.navigate(to);
@@ -8124,7 +8158,12 @@ function RouterProvider(_ref) {
   var _React$useState3 = React.useState(router.state),
     _React$useState4 = _slicedToArray(_React$useState3, 2),
     state = _React$useState4[0],
-    setState = _React$useState4[1];
+    setStateImpl = _React$useState4[1];
+  var setState = React.useCallback(function (newState) {
+    "startTransition" in React ? React.startTransition(function () {
+      return setStateImpl(newState);
+    }) : setStateImpl(newState);
+  }, [setStateImpl]);
   React.useLayoutEffect(function () {
     return router.subscribe(setState);
   }, [router, setState]);
@@ -8158,23 +8197,24 @@ function RouterProvider(_ref) {
       static: false,
       basename: basename
     };
-  }, [router, navigator, basename]); // The fragment and {null} here are important!  We need them to keep React 18's
+  }, [router, navigator, basename]);
+
+  // The fragment and {null} here are important!  We need them to keep React 18's
   // useId happy when we are server-rendering since we may have a <script> here
   // containing the hydrated server-side staticContext (from StaticRouterProvider).
   // useId relies on the component tree structure to generate deterministic id's
   // so we need to ensure it remains the same on the client even though
   // we don't need the <script> tag
-
   return /*#__PURE__*/React.createElement(React.Fragment, null, /*#__PURE__*/React.createElement(DataRouterContext.Provider, {
     value: dataRouterContext
   }, /*#__PURE__*/React.createElement(DataRouterStateContext.Provider, {
     value: state
   }, /*#__PURE__*/React.createElement(Router, {
-    basename: router.basename,
-    location: router.state.location,
-    navigationType: router.state.historyAction,
+    basename: basename,
+    location: state.location,
+    navigationType: state.historyAction,
     navigator: navigator
-  }, router.state.initialized ? /*#__PURE__*/React.createElement(DataRoutes, {
+  }, state.initialized ? /*#__PURE__*/React.createElement(DataRoutes, {
     routes: router.routes,
     state: state
   }) : fallbackElement))), null);
@@ -8184,7 +8224,6 @@ function DataRoutes(_ref2) {
     state = _ref2.state;
   return useRoutesImpl(routes, undefined, state);
 }
-
 /**
  * A <Router> that stores all entries in memory.
  *
@@ -8210,10 +8249,15 @@ function MemoryRouter(_ref3) {
     }),
     _React$useState6 = _slicedToArray(_React$useState5, 2),
     state = _React$useState6[0],
-    setState = _React$useState6[1];
+    setStateImpl = _React$useState6[1];
+  var setState = React.useCallback(function (newState) {
+    "startTransition" in React ? React.startTransition(function () {
+      return setStateImpl(newState);
+    }) : setStateImpl(newState);
+  }, [setStateImpl]);
   React.useLayoutEffect(function () {
     return history.listen(setState);
-  }, [history]);
+  }, [history, setState]);
   return /*#__PURE__*/React.createElement(Router, {
     basename: basename,
     children: children,
@@ -8222,7 +8266,6 @@ function MemoryRouter(_ref3) {
     navigator: history
   });
 }
-
 /**
  * Changes the current location.
  *
@@ -8246,9 +8289,10 @@ function Navigate(_ref4) {
     matches = _React$useContext9.matches;
   var _useLocation4 = useLocation(),
     locationPathname = _useLocation4.pathname;
-  var navigate = useNavigate(); // Resolve the path outside of the effect so that when effects run twice in
-  // StrictMode they navigate to the same place
+  var navigate = useNavigate();
 
+  // Resolve the path outside of the effect so that when effects run twice in
+  // StrictMode they navigate to the same place
   var path = (0, _router.resolveTo)(to, (0, _router.UNSAFE_getPathContributingMatches)(matches).map(function (match) {
     return match.pathnameBase;
   }), locationPathname, relative === "path");
@@ -8262,7 +8306,6 @@ function Navigate(_ref4) {
   }, [navigate, jsonPath, relative, replace, state]);
   return null;
 }
-
 /**
  * Renders the child route's element, if there is one.
  *
@@ -8271,7 +8314,6 @@ function Navigate(_ref4) {
 function Outlet(props) {
   return useOutlet(props.context);
 }
-
 /**
  * Declares an element that should be rendered at a certain URL path.
  *
@@ -8280,7 +8322,6 @@ function Outlet(props) {
 function Route(_props) {
   "development" !== "production" ? (0, _router.UNSAFE_invariant)(false, "A <Route> is only ever to be used as the child of <Routes> element, " + "never rendered directly. Please wrap your <Route> in a <Routes>.") : (0, _router.UNSAFE_invariant)(false);
 }
-
 /**
  * Provides location context for the rest of the app.
  *
@@ -8301,9 +8342,10 @@ function Router(_ref5) {
     navigator = _ref5.navigator,
     _ref5$static = _ref5.static,
     staticProp = _ref5$static === void 0 ? false : _ref5$static;
-  !!useInRouterContext() ? "development" !== "production" ? (0, _router.UNSAFE_invariant)(false, "You cannot render a <Router> inside another <Router>." + " You should never have more than one in your app.") : (0, _router.UNSAFE_invariant)(false) : void 0; // Preserve trailing slashes on basename, so we can let the user control
-  // the enforcement of trailing slashes throughout the app
+  !!useInRouterContext() ? "development" !== "production" ? (0, _router.UNSAFE_invariant)(false, "You cannot render a <Router> inside another <Router>." + " You should never have more than one in your app.") : (0, _router.UNSAFE_invariant)(false) : void 0;
 
+  // Preserve trailing slashes on basename, so we can let the user control
+  // the enforcement of trailing slashes throughout the app
   var basename = basenameProp.replace(/^\/*/, "/");
   var navigationContext = React.useMemo(function () {
     return {
@@ -8353,7 +8395,6 @@ function Router(_ref5) {
     value: locationContext
   }));
 }
-
 /**
  * A container for a nested tree of <Route> elements that renders the branch
  * that best matches the current location.
@@ -8365,7 +8406,6 @@ function Routes(_ref6) {
     location = _ref6.location;
   return useRoutes(createRoutesFromChildren(children), location);
 }
-
 /**
  * Component to use for rendering lazily loaded data from returning defer()
  * in a loader function
@@ -8431,7 +8471,6 @@ var AwaitErrorBoundary = /*#__PURE__*/function (_React$Component2) {
         status = AwaitRenderStatus.error;
         var renderError = this.state.error;
         promise = Promise.reject().catch(function () {}); // Avoid unhandled rejection warnings
-
         Object.defineProperty(promise, "_tracked", {
           get: function get() {
             return true;
@@ -8489,8 +8528,9 @@ var AwaitErrorBoundary = /*#__PURE__*/function (_React$Component2) {
           value: promise,
           children: children
         });
-      } // Throw to the suspense boundary
+      }
 
+      // Throw to the suspense boundary
       throw promise;
     }
   }], [{
@@ -8512,7 +8552,9 @@ function ResolveAwait(_ref8) {
   var data = useAsyncValue();
   var toRender = typeof children === "function" ? children(data) : children;
   return /*#__PURE__*/React.createElement(React.Fragment, null, toRender);
-} ///////////////////////////////////////////////////////////////////////////////
+}
+
+///////////////////////////////////////////////////////////////////////////////
 // UTILS
 ///////////////////////////////////////////////////////////////////////////////
 
@@ -8523,7 +8565,6 @@ function ResolveAwait(_ref8) {
  *
  * @see https://reactrouter.com/utils/create-routes-from-children
  */
-
 function createRoutesFromChildren(children, parentPath) {
   if (parentPath === void 0) {
     parentPath = [];
@@ -8566,10 +8607,10 @@ function createRoutesFromChildren(children, parentPath) {
   });
   return routes;
 }
+
 /**
  * Renders the result of `matchRoutes()` into a React element.
  */
-
 function renderMatches(matches) {
   return _renderMatches(matches);
 }
@@ -8617,7 +8658,7 @@ function createMemoryRouter(routes, opts) {
     routes: routes,
     mapRouteProperties: mapRouteProperties
   }).initialize();
-} ///////////////////////////////////////////////////////////////////////////////
+}
 },{"react":"node_modules/react/index.js","@remix-run/router":"node_modules/@remix-run/router/dist/router.js"}],"node_modules/react-router-dom/dist/index.js":[function(require,module,exports) {
 "use strict";
 
@@ -8965,7 +9006,7 @@ function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e2) { throw _e2; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e3) { didErr = true; err = _e3; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
 function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
 function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; } /**
-                                                                                                                                                                                     * React Router DOM v6.11.2
+                                                                                                                                                                                     * React Router DOM v6.12.0
                                                                                                                                                                                      *
                                                                                                                                                                                      * Copyright (c) Remix Software Inc.
                                                                                                                                                                                      *
@@ -9046,7 +9087,6 @@ function shouldProcessLinkClick(event, target) {
  *     sort: ['name', 'price']
  *   });
  */
-
 function createSearchParams(init) {
   if (init === void 0) {
     init = "";
@@ -9109,8 +9149,8 @@ function getFormSubmissionInfo(target, options, basename) {
     var form = target.form;
     if (form == null) {
       throw new Error("Cannot submit a <button> or <input type=\"submit\"> without a <form>");
-    } // <button>/<input type="submit"> may override attributes of <form>
-
+    }
+    // <button>/<input type="submit"> may override attributes of <form>
     if (options.action) {
       action = options.action;
     } else {
@@ -9122,9 +9162,9 @@ function getFormSubmissionInfo(target, options, basename) {
     }
     method = options.method || target.getAttribute("formmethod") || form.getAttribute("method") || defaultMethod;
     encType = options.encType || target.getAttribute("formenctype") || form.getAttribute("enctype") || defaultEncType;
-    formData = new FormData(form); // Include name + value from a <button>, appending in case the button name
+    formData = new FormData(form);
+    // Include name + value from a <button>, appending in case the button name
     // matches an existing input name
-
     if (target.name) {
       formData.append(target.name, target.value);
     }
@@ -9222,9 +9262,9 @@ function deserializeErrors(errors) {
     if (val && val.__type === "RouteErrorResponse") {
       serialized[key] = new _router.ErrorResponse(val.status, val.statusText, val.data, val.internal === true);
     } else if (val && val.__type === "Error") {
-      var error = new Error(val.message); // Wipe away the client-side stack trace.  Nothing to fill it in with
+      var error = new Error(val.message);
+      // Wipe away the client-side stack trace.  Nothing to fill it in with
       // because we don't serialize SSR stack traces for security reasons
-
       error.stack = "";
       serialized[key] = error;
     } else {
@@ -9236,7 +9276,6 @@ function deserializeErrors(errors) {
 /**
  * A `<Router>` for use in web browsers. Provides the cleanest URLs.
  */
-
 function BrowserRouter(_ref) {
   var basename = _ref.basename,
     children = _ref.children,
@@ -9255,10 +9294,15 @@ function BrowserRouter(_ref) {
     }),
     _React$useState2 = _slicedToArray(_React$useState, 2),
     state = _React$useState2[0],
-    setState = _React$useState2[1];
+    setStateImpl = _React$useState2[1];
+  var setState = React.useCallback(function (newState) {
+    "startTransition" in React ? React.startTransition(function () {
+      return setStateImpl(newState);
+    }) : setStateImpl(newState);
+  }, [setStateImpl]);
   React.useLayoutEffect(function () {
     return history.listen(setState);
-  }, [history]);
+  }, [history, setState]);
   return /*#__PURE__*/React.createElement(_reactRouter.Router, {
     basename: basename,
     children: children,
@@ -9271,7 +9315,6 @@ function BrowserRouter(_ref) {
  * A `<Router>` for use in web browsers. Stores the location in the hash
  * portion of the URL so it is not sent to the server.
  */
-
 function HashRouter(_ref2) {
   var basename = _ref2.basename,
     children = _ref2.children,
@@ -9290,10 +9333,15 @@ function HashRouter(_ref2) {
     }),
     _React$useState4 = _slicedToArray(_React$useState3, 2),
     state = _React$useState4[0],
-    setState = _React$useState4[1];
+    setStateImpl = _React$useState4[1];
+  var setState = React.useCallback(function (newState) {
+    "startTransition" in React ? React.startTransition(function () {
+      return setStateImpl(newState);
+    }) : setStateImpl(newState);
+  }, [setStateImpl]);
   React.useLayoutEffect(function () {
     return history.listen(setState);
-  }, [history]);
+  }, [history, setState]);
   return /*#__PURE__*/React.createElement(_reactRouter.Router, {
     basename: basename,
     children: children,
@@ -9308,7 +9356,6 @@ function HashRouter(_ref2) {
  * two versions of the history library to your bundles unless you use the same
  * version of the history library that React Router uses internally.
  */
-
 function HistoryRouter(_ref3) {
   var basename = _ref3.basename,
     children = _ref3.children,
@@ -9319,10 +9366,15 @@ function HistoryRouter(_ref3) {
     }),
     _React$useState6 = _slicedToArray(_React$useState5, 2),
     state = _React$useState6[0],
-    setState = _React$useState6[1];
+    setStateImpl = _React$useState6[1];
+  var setState = React.useCallback(function (newState) {
+    "startTransition" in React ? React.startTransition(function () {
+      return setStateImpl(newState);
+    }) : setStateImpl(newState);
+  }, [setStateImpl]);
   React.useLayoutEffect(function () {
     return history.listen(setState);
-  }, [history]);
+  }, [history, setState]);
   return /*#__PURE__*/React.createElement(_reactRouter.Router, {
     basename: basename,
     children: children,
@@ -9339,7 +9391,6 @@ var ABSOLUTE_URL_REGEX = /^(?:[a-z][a-z0-9+.-]*:|\/\/)/i;
 /**
  * The public API for rendering a history-aware <a>.
  */
-
 var Link = /*#__PURE__*/React.forwardRef(function LinkWithRef(_ref4, ref) {
   var onClick = _ref4.onClick,
     relative = _ref4.relative,
@@ -9351,14 +9402,14 @@ var Link = /*#__PURE__*/React.forwardRef(function LinkWithRef(_ref4, ref) {
     preventScrollReset = _ref4.preventScrollReset,
     rest = _objectWithoutPropertiesLoose(_ref4, _excluded);
   var _React$useContext = React.useContext(_reactRouter.UNSAFE_NavigationContext),
-    basename = _React$useContext.basename; // Rendered into <a href> for absolute URLs
-
+    basename = _React$useContext.basename;
+  // Rendered into <a href> for absolute URLs
   var absoluteHref;
   var isExternal = false;
   if (typeof to === "string" && ABSOLUTE_URL_REGEX.test(to)) {
     // Render the absolute href server- and client-side
-    absoluteHref = to; // Only check for external origins client-side
-
+    absoluteHref = to;
+    // Only check for external origins client-side
     if (isBrowser) {
       try {
         var currentUrl = new URL(window.location.href);
@@ -9375,8 +9426,8 @@ var Link = /*#__PURE__*/React.forwardRef(function LinkWithRef(_ref4, ref) {
         "development" !== "production" ? (0, _router.UNSAFE_warning)(false, "<Link to=\"" + to + "\"> contains an invalid URL which will probably break " + "when clicked - please update to a valid URL path.") : void 0;
       }
     }
-  } // Rendered into <a href> for relative URLs
-
+  }
+  // Rendered into <a href> for relative URLs
   var href = (0, _reactRouter.useHref)(to, {
     relative: relative
   });
@@ -9410,7 +9461,6 @@ if ("development" !== "production") {
 /**
  * A <Link> wrapper that knows if it's "active" or not.
  */
-
 var NavLink = /*#__PURE__*/React.forwardRef(function NavLinkWithRef(_ref5, ref) {
   var _ref5$ariaCurrent = _ref5["aria-current"],
     ariaCurrentProp = _ref5$ariaCurrent === void 0 ? "page" : _ref5$ariaCurrent,
@@ -9481,7 +9531,6 @@ if ("development" !== "production") {
  * requests, allowing components to add nicer UX to the page as the form is
  * submitted and returns with data.
  */
-
 var Form = /*#__PURE__*/React.forwardRef(function (props, ref) {
   return /*#__PURE__*/React.createElement(FormImpl, _extends({}, props, {
     ref: ref
@@ -9535,7 +9584,6 @@ if ("development" !== "production") {
  * This component will emulate the browser's scroll restoration on location
  * changes.
  */
-
 function ScrollRestoration(_ref7) {
   var getKey = _ref7.getKey,
     storageKey = _ref7.storageKey;
@@ -9547,11 +9595,11 @@ function ScrollRestoration(_ref7) {
 }
 if ("development" !== "production") {
   ScrollRestoration.displayName = "ScrollRestoration";
-} //#endregion
+}
+//#endregion
 ////////////////////////////////////////////////////////////////////////////////
 //#region Hooks
 ////////////////////////////////////////////////////////////////////////////////
-
 var DataRouterHook;
 (function (DataRouterHook) {
   DataRouterHook["UseScrollRestoration"] = "useScrollRestoration";
@@ -9581,7 +9629,6 @@ function useDataRouterState(hookName) {
  * you need to create custom `<Link>` components with the same click behavior we
  * use in our exported `<Link>`.
  */
-
 function useLinkClickHandler(to, _temp) {
   var _ref9 = _temp === void 0 ? {} : _temp,
     target = _ref9.target,
@@ -9596,9 +9643,9 @@ function useLinkClickHandler(to, _temp) {
   });
   return React.useCallback(function (event) {
     if (shouldProcessLinkClick(event, target)) {
-      event.preventDefault(); // If the URL hasn't changed, a regular <a> will do a replace instead of
+      event.preventDefault();
+      // If the URL hasn't changed, a regular <a> will do a replace instead of
       // a push, so do the same here unless the replace prop is explicitly set
-
       var replace = replaceProp !== undefined ? replaceProp : (0, _reactRouter.createPath)(location) === (0, _reactRouter.createPath)(path);
       navigate(to, {
         replace: replace,
@@ -9613,7 +9660,6 @@ function useLinkClickHandler(to, _temp) {
  * A convenient wrapper for reading and writing search parameters via the
  * URLSearchParams interface.
  */
-
 function useSearchParams(defaultInit) {
   "development" !== "production" ? (0, _router.UNSAFE_warning)(typeof URLSearchParams !== "undefined", "You cannot use the `useSearchParams` hook in a browser that does not " + "support the URLSearchParams API. If you need to support Internet " + "Explorer 11, we recommend you load a polyfill such as " + "https://github.com/ungap/url-search-params\n\n" + "If you're unsure how to load polyfills, we recommend you check out " + "https://polyfill.io/v3/ which provides some recommendations about how " + "to load polyfills only for users that need them, instead of for every " + "user.") : void 0;
   var defaultSearchParamsRef = React.useRef(createSearchParams(defaultInit));
@@ -9639,7 +9685,6 @@ function useSearchParams(defaultInit) {
  * Returns a function that may be used to programmatically submit a form (or
  * some arbitrary data) to the server.
  */
-
 function useSubmit() {
   return useSubmitImpl();
 }
@@ -9660,8 +9705,8 @@ function useSubmitImpl(fetcherKey, fetcherRouteId) {
       action = _getFormSubmissionInf.action,
       method = _getFormSubmissionInf.method,
       encType = _getFormSubmissionInf.encType,
-      formData = _getFormSubmissionInf.formData; // Base options shared between fetch() and navigate()
-
+      formData = _getFormSubmissionInf.formData;
+    // Base options shared between fetch() and navigate()
     var opts = {
       preventScrollReset: options.preventScrollReset,
       formData: formData,
@@ -9678,9 +9723,9 @@ function useSubmitImpl(fetcherKey, fetcherRouteId) {
       }));
     }
   }, [router, basename, fetcherKey, fetcherRouteId, currentRouteId]);
-} // v7: Eventually we should deprecate this entirely in favor of using the
+}
+// v7: Eventually we should deprecate this entirely in favor of using the
 // router method directly?
-
 function useFormAction(action, _temp2) {
   var _ref10 = _temp2 === void 0 ? {} : _temp2,
     relative = _ref10.relative;
@@ -9690,27 +9735,27 @@ function useFormAction(action, _temp2) {
   !routeContext ? "development" !== "production" ? (0, _router.UNSAFE_invariant)(false, "useFormAction must be used inside a RouteContext") : (0, _router.UNSAFE_invariant)(false) : void 0;
   var _routeContext$matches = routeContext.matches.slice(-1),
     _routeContext$matches2 = _slicedToArray(_routeContext$matches, 1),
-    match = _routeContext$matches2[0]; // Shallow clone path so we can modify it below, otherwise we modify the
+    match = _routeContext$matches2[0];
+  // Shallow clone path so we can modify it below, otherwise we modify the
   // object referenced by useMemo inside useResolvedPath
-
   var path = _extends({}, (0, _reactRouter.useResolvedPath)(action ? action : ".", {
     relative: relative
-  })); // Previously we set the default action to ".". The problem with this is that
+  }));
+  // Previously we set the default action to ".". The problem with this is that
   // `useResolvedPath(".")` excludes search params and the hash of the resolved
   // URL. This is the intended behavior of when "." is specifically provided as
   // the form action, but inconsistent w/ browsers when the action is omitted.
   // https://github.com/remix-run/remix/issues/927
-
   var location = (0, _reactRouter.useLocation)();
   if (action == null) {
     // Safe to write to these directly here since if action was undefined, we
     // would have called useResolvedPath(".") which will never include a search
     // or hash
     path.search = location.search;
-    path.hash = location.hash; // When grabbing search params from the URL, remove the automatically
+    path.hash = location.hash;
+    // When grabbing search params from the URL, remove the automatically
     // inserted ?index param so we match the useResolvedPath search behavior
     // which would not include ?index
-
     if (match.route.index) {
       var params = new URLSearchParams(path.search);
       params.delete("index");
@@ -9719,11 +9764,11 @@ function useFormAction(action, _temp2) {
   }
   if ((!action || action === ".") && match.route.index) {
     path.search = path.search ? path.search.replace(/^\?/, "?index&") : "?index";
-  } // If we're operating within a basename, prepend it to the pathname prior
+  }
+  // If we're operating within a basename, prepend it to the pathname prior
   // to creating the form action.  If this is a root navigation, then just use
   // the raw basename which allows the basename to have full control over the
   // presence of a trailing slash on root actions
-
   if (basename !== "/") {
     path.pathname = path.pathname === "/" ? basename : (0, _router.joinPaths)([basename, path.pathname]);
   }
@@ -9747,7 +9792,6 @@ var fetcherId = 0;
  * Interacts with route loaders and actions without causing a navigation. Great
  * for any interaction that stays on the same page.
  */
-
 function useFetcher() {
   var _route$matches;
   var _useDataRouterContext2 = useDataRouterContext(DataRouterHook.UseFetcher),
@@ -9803,7 +9847,6 @@ function useFetcher() {
  * Provides all fetchers currently on the page. Useful for layouts and parent
  * routes that need to provide pending/optimistic UI regarding the fetch.
  */
-
 function useFetchers() {
   var state = useDataRouterState(DataRouterStateHook.UseFetchers);
   return _toConsumableArray(state.fetchers.values());
@@ -9813,7 +9856,6 @@ var savedScrollPositions = {};
 /**
  * When rendered inside a RouterProvider, will restore scroll positions on navigations
  */
-
 function useScrollRestoration(_temp3) {
   var _ref11 = _temp3 === void 0 ? {} : _temp3,
     getKey = _ref11.getKey,
@@ -9825,15 +9867,15 @@ function useScrollRestoration(_temp3) {
     preventScrollReset = _useDataRouterState.preventScrollReset;
   var location = (0, _reactRouter.useLocation)();
   var matches = (0, _reactRouter.useMatches)();
-  var navigation = (0, _reactRouter.useNavigation)(); // Trigger manual scroll restoration while we're active
-
+  var navigation = (0, _reactRouter.useNavigation)();
+  // Trigger manual scroll restoration while we're active
   React.useEffect(function () {
     window.history.scrollRestoration = "manual";
     return function () {
       window.history.scrollRestoration = "auto";
     };
-  }, []); // Save positions on pagehide
-
+  }, []);
+  // Save positions on pagehide
   usePageHide(React.useCallback(function () {
     if (navigation.state === "idle") {
       var key = (getKey ? getKey(location, matches) : null) || location.key;
@@ -9841,8 +9883,8 @@ function useScrollRestoration(_temp3) {
     }
     sessionStorage.setItem(storageKey || SCROLL_RESTORATION_STORAGE_KEY, JSON.stringify(savedScrollPositions));
     window.history.scrollRestoration = "auto";
-  }, [storageKey, getKey, navigation.state, location, matches])); // Read in any saved scroll locations
-
+  }, [storageKey, getKey, navigation.state, location, matches]));
+  // Read in any saved scroll locations
   if (typeof document !== "undefined") {
     // eslint-disable-next-line react-hooks/rules-of-hooks
     React.useLayoutEffect(function () {
@@ -9851,11 +9893,12 @@ function useScrollRestoration(_temp3) {
         if (sessionPositions) {
           savedScrollPositions = JSON.parse(sessionPositions);
         }
-      } catch (e) {// no-op, use default empty object
+      } catch (e) {
+        // no-op, use default empty object
       }
-    }, [storageKey]); // Enable scroll restoration in the router
+    }, [storageKey]);
+    // Enable scroll restoration in the router
     // eslint-disable-next-line react-hooks/rules-of-hooks
-
     React.useLayoutEffect(function () {
       var disableScrollRestoration = router == null ? void 0 : router.enableScrollRestoration(savedScrollPositions, function () {
         return window.scrollY;
@@ -9863,32 +9906,32 @@ function useScrollRestoration(_temp3) {
       return function () {
         return disableScrollRestoration && disableScrollRestoration();
       };
-    }, [router, getKey]); // Restore scrolling when state.restoreScrollPosition changes
+    }, [router, getKey]);
+    // Restore scrolling when state.restoreScrollPosition changes
     // eslint-disable-next-line react-hooks/rules-of-hooks
-
     React.useLayoutEffect(function () {
       // Explicit false means don't do anything (used for submissions)
       if (restoreScrollPosition === false) {
         return;
-      } // been here before, scroll to it
-
+      }
+      // been here before, scroll to it
       if (typeof restoreScrollPosition === "number") {
         window.scrollTo(0, restoreScrollPosition);
         return;
-      } // try to scroll to the hash
-
+      }
+      // try to scroll to the hash
       if (location.hash) {
         var el = document.getElementById(location.hash.slice(1));
         if (el) {
           el.scrollIntoView();
           return;
         }
-      } // Don't reset if this navigation opted out
-
+      }
+      // Don't reset if this navigation opted out
       if (preventScrollReset === true) {
         return;
-      } // otherwise go to the top on new locations
-
+      }
+      // otherwise go to the top on new locations
       window.scrollTo(0, 0);
     }, [location, restoreScrollPosition, preventScrollReset]);
   }
@@ -9901,7 +9944,6 @@ function useScrollRestoration(_temp3) {
  * Note: The `callback` argument should be a function created with
  * `React.useCallback()`.
  */
-
 function useBeforeUnload(callback, options) {
   var _ref12 = options || {},
     capture = _ref12.capture;
@@ -9923,7 +9965,6 @@ function useBeforeUnload(callback, options) {
  * Note: The `callback` argument should be a function created with
  * `React.useCallback()`.
  */
-
 function usePageHide(callback, options) {
   var _ref13 = options || {},
     capture = _ref13.capture;
@@ -9945,7 +9986,6 @@ function usePageHide(callback, options) {
  * very incorrectly in some cases) across browsers if user click addition
  * back/forward navigations while the confirm is open.  Use at your own risk.
  */
-
 function usePrompt(_ref8) {
   var when = _ref8.when,
     message = _ref8.message;
@@ -9967,45 +10007,7 @@ function usePrompt(_ref8) {
   }, [blocker, message]);
 }
 //#endregion
-},{"react":"node_modules/react/index.js","react-router":"node_modules/react-router/dist/index.js","@remix-run/router":"node_modules/@remix-run/router/dist/router.js"}],"src/Header.js":[function(require,module,exports) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = void 0;
-var _react = _interopRequireDefault(require("react"));
-var _reactRouterDom = require("react-router-dom");
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-function Header() {
-  return /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement("nav", {
-    className: "navbar navbar-expand-lg bg-body-tertiary"
-  }, /*#__PURE__*/_react.default.createElement("div", {
-    className: "container-fluid"
-  }, /*#__PURE__*/_react.default.createElement(_reactRouterDom.Link, {
-    className: "navbar-brand",
-    to: "/"
-  }, "Asset"), /*#__PURE__*/_react.default.createElement("button", {
-    className: "navbar-toggler",
-    type: "button"
-  }, /*#__PURE__*/_react.default.createElement("span", {
-    className: "navbar-toggler-icon"
-  })), /*#__PURE__*/_react.default.createElement("div", {
-    className: "collapse navbar-collapse",
-    id: "navbarSupportedContent"
-  }, /*#__PURE__*/_react.default.createElement("ul", {
-    className: "navbar-nav me-auto mb-2 mb-lg-0"
-  }, /*#__PURE__*/_react.default.createElement("li", {
-    className: "nav-item"
-  }, /*#__PURE__*/_react.default.createElement(_reactRouterDom.Link, {
-    className: "nav-link active",
-    "aria-current": "page",
-    to: "/login"
-  }, "Login")))))));
-}
-var _default = Header;
-exports.default = _default;
-},{"react":"node_modules/react/index.js","react-router-dom":"node_modules/react-router-dom/dist/index.js"}],"node_modules/parcel-bundler/src/builtins/bundle-url.js":[function(require,module,exports) {
+},{"react":"node_modules/react/index.js","react-router":"node_modules/react-router/dist/index.js","@remix-run/router":"node_modules/@remix-run/router/dist/router.js"}],"node_modules/parcel-bundler/src/builtins/bundle-url.js":[function(require,module,exports) {
 var bundleURL = null;
 function getBundleURLCached() {
   if (!bundleURL) {
@@ -15404,6 +15406,7 @@ var _react = _interopRequireWildcard(require("react"));
 var _reactRouterDom = require("react-router-dom");
 var _img = _interopRequireDefault(require("../images/img4.jpeg"));
 var _loginComponent = _interopRequireDefault(require("../component-css/loginComponent"));
+var _Header = _interopRequireDefault(require("./Header"));
 function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
 function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -15425,7 +15428,9 @@ var adminData = function adminData() {
     passwd: ""
   };
 };
-function Login() {
+function Login(_ref) {
+  var login = _ref.login,
+    isLogin = _ref.isLogin;
   var _useState = (0, _react.useState)(function () {
       return adminData();
     }),
@@ -15437,11 +15442,18 @@ function Login() {
     msg = _useState4[0],
     setmsg = _useState4[1];
   var navigate = (0, _reactRouterDom.useNavigate)();
+  (0, _react.useEffect)(function () {
+    console.log(isLogin);
+    if (isLogin) {
+      navigate("/dash");
+    }
+  }, []);
   var check = function check() {
     _axios.default.post("http://localhost:3001/login", admin).then(function (res) {
       console.log(res);
       if (res.data.status == "success") {
-        navigate("/");
+        login();
+        navigate("/dash");
       } else {
         setmsg("email and password incoreect");
       }
@@ -15462,7 +15474,7 @@ function Login() {
   };
   return /*#__PURE__*/_react.default.createElement("div", {
     className: "container-fluid"
-  }, /*#__PURE__*/_react.default.createElement("div", {
+  }, /*#__PURE__*/_react.default.createElement(_Header.default, null), /*#__PURE__*/_react.default.createElement("div", {
     className: "row"
   }, /*#__PURE__*/_react.default.createElement("div", {
     className: "col-6"
@@ -15517,7 +15529,102 @@ function Login() {
     }
   }, msg)))));
 }
-},{"../css/login.css":"css/login.css","axios":"node_modules/axios/index.js","react":"node_modules/react/index.js","react-router-dom":"node_modules/react-router-dom/dist/index.js","../images/img4.jpeg":"images/img4.jpeg","../component-css/loginComponent":"component-css/loginComponent.jsx"}],"App.js":[function(require,module,exports) {
+},{"../css/login.css":"css/login.css","axios":"node_modules/axios/index.js","react":"node_modules/react/index.js","react-router-dom":"node_modules/react-router-dom/dist/index.js","../images/img4.jpeg":"images/img4.jpeg","../component-css/loginComponent":"component-css/loginComponent.jsx","./Header":"src/Header.js"}],"src/Header.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _react = _interopRequireDefault(require("react"));
+var _reactRouterDom = require("react-router-dom");
+var _Login = _interopRequireDefault(require("./Login"));
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function Header(_ref) {
+  var isLogin = _ref.isLogin;
+  return /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement("nav", {
+    className: "navbar navbar-expand-lg bg-body-tertiary"
+  }, /*#__PURE__*/_react.default.createElement("div", {
+    className: "container-fluid"
+  }, /*#__PURE__*/_react.default.createElement(_reactRouterDom.Link, {
+    className: "navbar-brand",
+    to: "/home"
+  }, "Asset"), /*#__PURE__*/_react.default.createElement("button", {
+    className: "navbar-toggler",
+    type: "button"
+  }, /*#__PURE__*/_react.default.createElement("span", {
+    className: "navbar-toggler-icon"
+  })), /*#__PURE__*/_react.default.createElement("div", {
+    className: "collapse navbar-collapse",
+    id: "navbarSupportedContent"
+  }, /*#__PURE__*/_react.default.createElement("ul", {
+    className: "navbar-nav me-auto mb-2 mb-lg-0"
+  }, /*#__PURE__*/_react.default.createElement("li", {
+    className: "nav-item"
+  }, /*#__PURE__*/_react.default.createElement(_reactRouterDom.Link, {
+    className: "nav-link active",
+    "aria-current": "page",
+    to: "/about"
+  }, "About")))))));
+}
+var _default = Header;
+exports.default = _default;
+},{"react":"node_modules/react/index.js","react-router-dom":"node_modules/react-router-dom/dist/index.js","./Login":"src/Login.js"}],"src/About.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _react = _interopRequireDefault(require("react"));
+var _Header = _interopRequireDefault(require("./Header"));
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function About() {
+  return /*#__PURE__*/_react.default.createElement(_react.default.Fragment, null, /*#__PURE__*/_react.default.createElement(_Header.default, null), /*#__PURE__*/_react.default.createElement("div", null, "About"));
+}
+var _default = About;
+exports.default = _default;
+},{"react":"node_modules/react/index.js","./Header":"src/Header.js"}],"src/Logout.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _react = _interopRequireDefault(require("react"));
+var _Header = _interopRequireDefault(require("./Header"));
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function Logout() {
+  return /*#__PURE__*/_react.default.createElement(_react.default.Fragment, null, /*#__PURE__*/_react.default.createElement(_Header.default, null), /*#__PURE__*/_react.default.createElement("div", null, "Logout"));
+}
+var _default = Logout;
+exports.default = _default;
+},{"react":"node_modules/react/index.js","./Header":"src/Header.js"}],"Protected.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _react = _interopRequireDefault(require("react"));
+var _reactRouterDom = require("react-router-dom");
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function Protected(_ref) {
+  var Cpm = _ref.Cpm,
+    isLogin = _ref.isLogin;
+  var navigate = (0, _reactRouterDom.useNavigate)();
+  useEffect(function () {
+    console.log(isLogin);
+    if (isLogin) {
+      navigate("/login");
+    }
+    // else if()
+  }, [isLogin]);
+  return /*#__PURE__*/_react.default.createElement(_reactRouterDom.Outlet, null);
+}
+var _default = Protected;
+exports.default = _default;
+},{"react":"node_modules/react/index.js","react-router-dom":"node_modules/react-router-dom/dist/index.js"}],"App.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -15528,6 +15635,9 @@ var _react = _interopRequireWildcard(require("react"));
 var _Header = _interopRequireDefault(require("./src/Header"));
 var _Login = _interopRequireDefault(require("./src/Login"));
 var _reactRouterDom = require("react-router-dom");
+var _About = _interopRequireDefault(require("./src/About"));
+var _Logout = _interopRequireDefault(require("./src/Logout"));
+var _Protected = _interopRequireDefault(require("./Protected"));
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
 function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
@@ -15538,18 +15648,40 @@ function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len 
 function _iterableToArrayLimit(arr, i) { var _i = null == arr ? null : "undefined" != typeof Symbol && arr[Symbol.iterator] || arr["@@iterator"]; if (null != _i) { var _s, _e, _x, _r, _arr = [], _n = !0, _d = !1; try { if (_x = (_i = _i.call(arr)).next, 0 === i) { if (Object(_i) !== _i) return; _n = !1; } else for (; !(_n = (_s = _x.call(_i)).done) && (_arr.push(_s.value), _arr.length !== i); _n = !0); } catch (err) { _d = !0, _e = err; } finally { try { if (!_n && null != _i.return && (_r = _i.return(), Object(_r) !== _r)) return; } finally { if (_d) throw _e; } } return _arr; } }
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 function App() {
-  var _useState = (0, _react.useState)(null),
+  var _useState = (0, _react.useState)(false),
     _useState2 = _slicedToArray(_useState, 2),
     isLogin = _useState2[0],
     setIsLogin = _useState2[1];
-  return /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement(_reactRouterDom.BrowserRouter, null, /*#__PURE__*/_react.default.createElement(_Header.default, null), /*#__PURE__*/_react.default.createElement(_reactRouterDom.Routes, null, /*#__PURE__*/_react.default.createElement(_reactRouterDom.Route, {
+  var login = function login() {
+    setIsLogin(true);
+  };
+  var logout = function logout() {
+    setIsLogin(false);
+  };
+  return /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement(_reactRouterDom.BrowserRouter, null, /*#__PURE__*/_react.default.createElement(_reactRouterDom.Routes, null, /*#__PURE__*/_react.default.createElement(_reactRouterDom.Route, {
+    path: "/dash"
+  }, /*#__PURE__*/_react.default.createElement(_Protected.default, {
+    Cmp: _Header.default,
+    isLogin: isLogin
+  })), /*#__PURE__*/_react.default.createElement(_reactRouterDom.Route, {
+    path: "/about"
+  }, /*#__PURE__*/_react.default.createElement(_Protected.default, {
+    Cmp: _About.default,
+    isLogin: isLogin
+  })), /*#__PURE__*/_react.default.createElement(_reactRouterDom.Route, {
+    path: "/logout",
+    element: /*#__PURE__*/_react.default.createElement(_Logout.default, null)
+  }), /*#__PURE__*/_react.default.createElement(_reactRouterDom.Route, {
     path: "/login",
-    element: /*#__PURE__*/_react.default.createElement(_Login.default, null)
+    element: /*#__PURE__*/_react.default.createElement(_Login.default, {
+      login: login,
+      isLogin: isLogin
+    })
   }))));
 }
 var _default = App;
 exports.default = _default;
-},{"react":"node_modules/react/index.js","./src/Header":"src/Header.js","./src/Login":"src/Login.js","react-router-dom":"node_modules/react-router-dom/dist/index.js"}],"node_modules/scheduler/cjs/scheduler.development.js":[function(require,module,exports) {
+},{"react":"node_modules/react/index.js","./src/Header":"src/Header.js","./src/Login":"src/Login.js","react-router-dom":"node_modules/react-router-dom/dist/index.js","./src/About":"src/About.js","./src/Logout":"src/Logout.js","./Protected":"Protected.js"}],"node_modules/scheduler/cjs/scheduler.development.js":[function(require,module,exports) {
 /**
  * @license React
  * scheduler.development.js
@@ -41945,7 +42077,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "37813" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "34587" + '/');
   ws.onmessage = function (event) {
     checkedAssets = {};
     assetsToAccept = [];

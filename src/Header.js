@@ -22,16 +22,44 @@ function Header({ isLogin }) {
                   About
                 </Link>
               </li>
-
               <li className="nav-item">
                 <Link
                   className="nav-link active"
                   aria-current="page"
-                  to="/logout"
+                  to="/category"
                 >
-                  Logout
+                  category
                 </Link>
               </li>
+              <li className="nav-item">
+                <Link
+                  className="nav-link active"
+                  aria-current="page"
+                  to="/assets"
+                >
+                  Assets
+                </Link>
+              </li>
+              <li className="nav-item">
+                <Link
+                  className="nav-link active"
+                  aria-current="page"
+                  to="/employees"
+                >
+                  Employess
+                </Link>
+              </li>
+              <div>
+                <li className="nav-item">
+                  <Link
+                    className="nav-link active"
+                    aria-current="page"
+                    to="/logout"
+                  >
+                    Logout
+                  </Link>
+                </li>
+              </div>
             </ul>
           </div>
         </div>

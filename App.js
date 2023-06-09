@@ -6,6 +6,8 @@ import Logout from "./src/Logout";
 import Protected from "./Protected";
 import Assets from "./src/Assets/Assets";
 import { useRoutes } from "react-router-dom";
+import Category from "./src/Category/Category";
+import CategoryPop from "./src/Category/createCategory";
 function App() {
   const [isLogin, setIsLogin] = useState(false);
   const login = () => {
@@ -14,7 +16,6 @@ function App() {
   const logout = () => {
     setIsLogin(false);
   };
-
   const elements = useRoutes([
     {
       path: "/",
@@ -36,6 +37,14 @@ function App() {
           path: "about",
           element: <About />,
         },
+        {
+          path: "category",
+          element: <Category />,
+        },
+        {
+          path:"categoryPop",
+          element:<CategoryPop/>
+        }
       ],
     },
   ]);

@@ -11,8 +11,7 @@ import headphone from "../../images/headphone.jpeg";
 function Assets() {
   return (
     <div>
-      <Header />
-
+      <Header/>
       <div
         className="container-fluid"
         style={{
@@ -20,8 +19,7 @@ function Assets() {
           justifyContent: "center",
           flexWrap: "wrap",
           padding: "20px",
-        }}
-      >
+        }}>
         <div className="col-4">
           <Card image={laptop} />
         </div>
@@ -46,3 +44,13 @@ function Assets() {
 }
 
 export default Assets;
+
+
+
+
+
+
+
+
+
+

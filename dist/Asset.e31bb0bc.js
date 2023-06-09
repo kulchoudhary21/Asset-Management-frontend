@@ -10047,8 +10047,26 @@ function Header(_ref) {
   }, /*#__PURE__*/_react.default.createElement(_reactRouterDom.Link, {
     className: "nav-link active",
     "aria-current": "page",
+    to: "/category"
+  }, "category")), /*#__PURE__*/_react.default.createElement("li", {
+    className: "nav-item"
+  }, /*#__PURE__*/_react.default.createElement(_reactRouterDom.Link, {
+    className: "nav-link active",
+    "aria-current": "page",
+    to: "/assets"
+  }, "Assets")), /*#__PURE__*/_react.default.createElement("li", {
+    className: "nav-item"
+  }, /*#__PURE__*/_react.default.createElement(_reactRouterDom.Link, {
+    className: "nav-link active",
+    "aria-current": "page",
+    to: "/employees"
+  }, "Employess")), /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement("li", {
+    className: "nav-item"
+  }, /*#__PURE__*/_react.default.createElement(_reactRouterDom.Link, {
+    className: "nav-link active",
+    "aria-current": "page",
     to: "/logout"
-  }, "Logout")))))));
+  }, "Logout"))))))));
 }
 var _default = Header;
 exports.default = _default;
@@ -15757,7 +15775,119 @@ function Assets() {
 }
 var _default = Assets;
 exports.default = _default;
-},{"react":"node_modules/react/index.js","../Header":"src/Header.js","./Card":"src/Assets/Card.js","../../css/assets.css":"css/assets.css","../../images/laptop1.jpeg":"images/laptop1.jpeg","../../images/keyboard.webp":"images/keyboard.webp","../../images/laptopCharger.jpg":"images/laptopCharger.jpg","../../images/mouse.jpg":"images/mouse.jpg","../../images/notepad.jpeg":"images/notepad.jpeg","../../images/headphone.jpeg":"images/headphone.jpeg"}],"App.js":[function(require,module,exports) {
+},{"react":"node_modules/react/index.js","../Header":"src/Header.js","./Card":"src/Assets/Card.js","../../css/assets.css":"css/assets.css","../../images/laptop1.jpeg":"images/laptop1.jpeg","../../images/keyboard.webp":"images/keyboard.webp","../../images/laptopCharger.jpg":"images/laptopCharger.jpg","../../images/mouse.jpg":"images/mouse.jpg","../../images/notepad.jpeg":"images/notepad.jpeg","../../images/headphone.jpeg":"images/headphone.jpeg"}],"src/Category/createCategory.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _react = _interopRequireDefault(require("react"));
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function CategoryPop() {
+  return /*#__PURE__*/_react.default.createElement("div", null);
+}
+var _default = CategoryPop;
+exports.default = _default;
+},{"react":"node_modules/react/index.js"}],"src/Category/Category.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _react = _interopRequireWildcard(require("react"));
+var _Header = _interopRequireDefault(require("../Header"));
+var _createCategory = _interopRequireDefault(require("./createCategory"));
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
+function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
+function _iterableToArrayLimit(arr, i) { var _i = null == arr ? null : "undefined" != typeof Symbol && arr[Symbol.iterator] || arr["@@iterator"]; if (null != _i) { var _s, _e, _x, _r, _arr = [], _n = !0, _d = !1; try { if (_x = (_i = _i.call(arr)).next, 0 === i) { if (Object(_i) !== _i) return; _n = !1; } else for (; !(_n = (_s = _x.call(_i)).done) && (_arr.push(_s.value), _arr.length !== i); _n = !0); } catch (err) { _d = !0, _e = err; } finally { try { if (!_n && null != _i.return && (_r = _i.return(), Object(_r) !== _r)) return; } finally { if (_d) throw _e; } } return _arr; } }
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+function Category() {
+  var _useState = (0, _react.useState)(true),
+    _useState2 = _slicedToArray(_useState, 2),
+    isOpen = _useState2[0],
+    setIsOpen = _useState2[1];
+  function Open() {
+    setIsOpen(true);
+    console.log("hello");
+  }
+  function Close() {
+    setIsOpen(false);
+  }
+  return /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement(_Header.default, null), /*#__PURE__*/_react.default.createElement("div", {
+    className: "row"
+  }, /*#__PURE__*/_react.default.createElement("div", {
+    className: "col-6"
+  }, /*#__PURE__*/_react.default.createElement("h4", null, "Categories"), /*#__PURE__*/_react.default.createElement("table", {
+    className: "table"
+  }, /*#__PURE__*/_react.default.createElement("thead", null, /*#__PURE__*/_react.default.createElement("tr", null, /*#__PURE__*/_react.default.createElement("th", {
+    scope: "col"
+  }, "assets id"), /*#__PURE__*/_react.default.createElement("th", {
+    scope: "col"
+  }, "Asset Name"))), /*#__PURE__*/_react.default.createElement("tbody", null, /*#__PURE__*/_react.default.createElement("tr", null, /*#__PURE__*/_react.default.createElement("th", {
+    scope: "row"
+  }, "1"), /*#__PURE__*/_react.default.createElement("td", null, "Mark"))))), /*#__PURE__*/_react.default.createElement("div", {
+    className: "col-6",
+    style: {
+      direction: "rtl",
+      marginLeft: "inherit",
+      paddingRight: "5%"
+    }
+  }, /*#__PURE__*/_react.default.createElement("button", {
+    type: "button",
+    className: "btn btn-primary",
+    "data-bs-toggle": "modal",
+    "data-bs-target": "#exampleModal"
+  }, "create category")), /*#__PURE__*/_react.default.createElement("div", {
+    class: "modal fade",
+    id: "exampleModal",
+    tabindex: "-1",
+    "aria-labelledby": "exampleModalLabel",
+    "aria-hidden": "true"
+  }, /*#__PURE__*/_react.default.createElement("div", {
+    class: "modal-dialog"
+  }, /*#__PURE__*/_react.default.createElement("div", {
+    class: "modal-content"
+  }, /*#__PURE__*/_react.default.createElement("div", {
+    class: "modal-header"
+  }, /*#__PURE__*/_react.default.createElement("h1", {
+    class: "modal-title fs-5",
+    id: "exampleModalLabel"
+  }, "Asset"), /*#__PURE__*/_react.default.createElement("button", {
+    type: "button",
+    class: "btn-close",
+    "data-bs-dismiss": "modal",
+    "aria-label": "Close"
+  })), /*#__PURE__*/_react.default.createElement("div", {
+    class: "modal-body"
+  }, /*#__PURE__*/_react.default.createElement("div", {
+    class: "input-group mb-3"
+  }, /*#__PURE__*/_react.default.createElement("input", {
+    type: "text",
+    class: "form-control",
+    placeholder: "Asset name",
+    "aria-label": "Recipient's username",
+    "aria-describedby": "basic-addon2"
+  }))), /*#__PURE__*/_react.default.createElement("div", {
+    class: "modal-footer"
+  }, /*#__PURE__*/_react.default.createElement("button", {
+    type: "button",
+    class: "btn btn-secondary",
+    "data-bs-dismiss": "modal"
+  }, "Close"), /*#__PURE__*/_react.default.createElement("button", {
+    type: "button",
+    class: "btn btn-primary"
+  }, "Save changes")))))));
+}
+var _default = Category;
+exports.default = _default;
+},{"react":"node_modules/react/index.js","../Header":"src/Header.js","./createCategory":"src/Category/createCategory.js"}],"App.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -15772,6 +15902,8 @@ var _Logout = _interopRequireDefault(require("./src/Logout"));
 var _Protected = _interopRequireDefault(require("./Protected"));
 var _Assets = _interopRequireDefault(require("./src/Assets/Assets"));
 var _reactRouterDom = require("react-router-dom");
+var _Category = _interopRequireDefault(require("./src/Category/Category"));
+var _createCategory = _interopRequireDefault(require("./src/Category/createCategory"));
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
 function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
@@ -15813,13 +15945,19 @@ function App() {
     }, {
       path: "about",
       element: /*#__PURE__*/_react.default.createElement(_About.default, null)
+    }, {
+      path: "category",
+      element: /*#__PURE__*/_react.default.createElement(_Category.default, null)
+    }, {
+      path: "categoryPop",
+      element: /*#__PURE__*/_react.default.createElement(_createCategory.default, null)
     }]
   }]);
   return /*#__PURE__*/_react.default.createElement("div", null, elements);
 }
 var _default = App;
 exports.default = _default;
-},{"react":"node_modules/react/index.js","./src/Header":"src/Header.js","./src/Login":"src/Login.js","./src/About":"src/About.js","./src/Logout":"src/Logout.js","./Protected":"Protected.js","./src/Assets/Assets":"src/Assets/Assets.js","react-router-dom":"node_modules/react-router-dom/dist/index.js"}],"node_modules/scheduler/cjs/scheduler.development.js":[function(require,module,exports) {
+},{"react":"node_modules/react/index.js","./src/Header":"src/Header.js","./src/Login":"src/Login.js","./src/About":"src/About.js","./src/Logout":"src/Logout.js","./Protected":"Protected.js","./src/Assets/Assets":"src/Assets/Assets.js","react-router-dom":"node_modules/react-router-dom/dist/index.js","./src/Category/Category":"src/Category/Category.js","./src/Category/createCategory":"src/Category/createCategory.js"}],"node_modules/scheduler/cjs/scheduler.development.js":[function(require,module,exports) {
 /**
  * @license React
  * scheduler.development.js
@@ -42216,7 +42354,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "36835" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "45441" + '/');
   ws.onmessage = function (event) {
     checkedAssets = {};
     assetsToAccept = [];

@@ -1,6 +1,6 @@
 import React from "react";
 import laptop from "../../images/laptop1.jpeg"
-function Card({image}) {
+function AssetsCard({image}) {
   return (
     <div>
       <div className="card" style={{width: "18rem"}}>
@@ -17,5 +17,5 @@ function Card({image}) {
   );
 }
 
-export default Card;
+export default AssetsCard;
 // {laptop,laptopCharger,headphone,mouse,notepad,keyboard}

@@ -1,35 +1,85 @@
 import React, { useEffect, useState } from "react";
 import Header from "../Header";
-import CategoryPop from "./createCategory";
-
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
+const assetCategory = () => {
+  return { assetCategory: "" };
+};
 function Category() {
-  const [isOpen, setIsOpen] = useState(true);
-  function Open() {
-    setIsOpen(true);
-    console.log("hello");
+  const [asset, setAsset] = useState(() => assetCategory());
+  const [data, setData] = useState();
+  const navigate = useNavigate();
+  async function addCategory() {
+    console.log(asset);
+    if (asset) {
+      await axios
+        .post("http://localhost:3001/assetCreateCategory", asset)
+        .then((resp) => {
+          console.log(resp);
+          setData(resp);
+          navigate("/category");
+        })
+        .catch((err) => {
+          console.log("err", err);
+        });
+      await axios
+        .get("http://localhost:3001/assetGetCategory")
+        .then((resp) => {
+          console.log("---", resp);
+          setData(resp);
+          navigate("/category");
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
   }
-  function Close() {
-    setIsOpen(false);
+
+  function fetchInfo() {
+    axios
+      .get("http://localhost:3001/assetGetCategory")
+      .then((resp) => {
+        setData(resp);
+        navigate("/category");
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
+  useEffect(() => {
+    fetchInfo();
+  }, []);
+  if (data == undefined) {
+    console.log(data, "---", true);
+  }
+
+  function onAdded(e) {
+    console.log(e.target.value);
+    setAsset({ ...asset, assetCategory: e.target.value });
   }
   return (
     <div>
       <Header />
       <div className="row">
         <div className="col-6">
-          <h4>Categories</h4>
-          <table className="table">
-            <thead>
-              <tr>
-                <th scope="col">assets id</th>
-                <th scope="col">Asset Name</th>
+          <h5>Categories</h5>
+          <table className="table" key={1}>
+            <thead key={2}>
+              <tr key={3}>
+                <th scope="col">id</th>
+                <th scope="col">Asset</th>
               </tr>
             </thead>
-            <tbody>
-              <tr>
-                <th scope="row">1</th>
-                <td>Mark</td>
-              </tr>
-            </tbody>
+            {data && data.data.data !== undefined ? (
+              <tbody key={4}>
+                {data.data.data.map((item, index) => (
+                  <tr key={index}>
+                    <th scope="row">{item.id}</th>
+                    <td>{item.asset}</td>
+                  </tr>
+                ))}
+              </tbody>
+            ) : null}
           </table>
         </div>
 
@@ -51,45 +101,50 @@ function Category() {
           </button>
         </div>
         <div
-          class="modal fade"
+          className="modal fade"
           id="exampleModal"
-          tabindex="-1"
+          tabIndex="-1"
           aria-labelledby="exampleModalLabel"
           aria-hidden="true"
         >
-          <div class="modal-dialog">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h1 class="modal-title fs-5" id="exampleModalLabel">
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h1 className="modal-title fs-5" id="exampleModalLabel">
                   Asset
                 </h1>
                 <button
                   type="button"
-                  class="btn-close"
+                  className="btn-close"
                   data-bs-dismiss="modal"
                   aria-label="Close"
                 ></button>
               </div>
-              <div class="modal-body">
-                <div class="input-group mb-3">
+              <div className="modal-body">
+                <div className="input-group mb-3">
                   <input
                     type="text"
-                    class="form-control"
+                    className="form-control"
                     placeholder="Asset name"
                     aria-label="Recipient's username"
                     aria-describedby="basic-addon2"
+                    onChange={onAdded}
                   />
                 </div>
               </div>
-              <div class="modal-footer">
+              <div className="modal-footer">
                 <button
                   type="button"
-                  class="btn btn-secondary"
+                  className="btn btn-secondary"
                   data-bs-dismiss="modal"
                 >
                   Close
                 </button>
-                <button type="button" class="btn btn-primary">
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  onClick={() => addCategory()}
+                >
                   Save changes
                 </button>
               </div>

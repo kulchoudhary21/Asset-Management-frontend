@@ -4,10 +4,11 @@ import Login from "./src/Login";
 import About from "./src/About";
 import Logout from "./src/Logout";
 import Protected from "./Protected";
-import Assets from "./src/Assets/Assets";
+import AssetsDash from "./src/Assets/AssetsDash";
 import { useRoutes } from "react-router-dom";
 import Category from "./src/Category/Category";
-import CategoryPop from "./src/Category/createCategory";
+import Asset from "./src/Assets/Asset";
+import Employee from "./src/Employees/Employee";
 function App() {
   const [isLogin, setIsLogin] = useState(false);
   const login = () => {
@@ -27,7 +28,7 @@ function App() {
         },
         {
           path: "home",
-          element: <Assets />,
+          element: <AssetsDash />,
         },
         {
           path: "logout",
@@ -42,9 +43,13 @@ function App() {
           element: <Category />,
         },
         {
-          path:"categoryPop",
-          element:<CategoryPop/>
-        }
+          path: "assets",
+          element: <Asset />,
+        },
+        {
+          path: "employees",
+          element: <Employee />,
+        },
       ],
     },
   ]);

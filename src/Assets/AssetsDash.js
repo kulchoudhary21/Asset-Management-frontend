@@ -1,6 +1,6 @@
 import React from "react";
 import Header from "../Header";
-import Card from "./Card";
+import AssetsCard from "./AssetsCard";
 import "../../css/assets.css";
 import laptop from "../../images/laptop1.jpeg";
 import keyboard from "../../images/keyboard.webp";
@@ -8,7 +8,7 @@ import laptopCharger from "../../images/laptopCharger.jpg";
 import mouse from "../../images/mouse.jpg";
 import notepad from "../../images/notepad.jpeg";
 import headphone from "../../images/headphone.jpeg";
-function Assets() {
+function AssetsDash() {
   return (
     <div>
       <Header/>
@@ -21,29 +21,29 @@ function Assets() {
           padding: "20px",
         }}>
         <div className="col-4">
-          <Card image={laptop} />
+          <AssetsCard image={laptop} />
         </div>
         <div className="col-4">
-          <Card image={headphone} />
+          <AssetsCard image={headphone} />
         </div>
         <div className="col-4">
-          <Card image={mouse} />
+          <AssetsCard image={mouse} />
         </div>
         <div className="col-4">
-          <Card image={keyboard} />
+          <AssetsCard image={keyboard} />
         </div>
         <div className="col-4">
-          <Card image={laptopCharger} />
+          <AssetsCard image={laptopCharger} />
         </div>
         <div className="col-4">
-          <Card image={notepad} />
+          <AssetsCard image={notepad} />
         </div>
       </div>
     </div>
   );
 }
 
-export default Assets;
+export default AssetsDash;
 
 
 

@@ -1,37 +1,94 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Header from "../Header";
 import axios from "axios";
-const getEmployees = () => {
-  return { name: "", gender: "", depart: "" };
+import { useNavigate } from "react-router-dom";
+import EmployeePop from "./createEmployee";
+const assetCategory = () => {
+  return { assetCategory: "", isDelete: "false" };
+};
+const editCategory1 = () => {
+  return { assetCategory: "" };
 };
 function Employee() {
-  const [data, setData] = useState(() => getEmployees());
-  const addemployee = () => {
-    console.log(data);
-    if (data) {
-        console.log(data)
-      axios
-        .post("http://localhost:3001/createEmployee", data)
+  const [asset, setAsset] = useState(() => assetCategory());
+  const [data, setData] = useState();
+  const [editData, setEditData] = useState(() => editCategory1());
+  const [idd, setid] = useState();
+  const navigate = useNavigate();
+
+  async function addCategory() {
+    console.log(asset);
+    if (asset && asset.assetCategory) {
+      await axios
+        .post("http://localhost:3001/createDepartment", asset)
         .then((resp) => {
-          console.log(resp);
+          setData(resp);
+          navigate("/employees");
         })
-        .catch((err) => {   
-          console.log("err:", err);
+        .catch((err) => {
+          console.log("err", err);
+        });
+      await axios
+        .get("http://localhost:3001/getDepartment")
+        .then((resp) => {
+          setData(resp);
+          navigate("/employees");
+        })
+        .catch((err) => {
+          console.log(err);
         });
     }
+  }
+
+  async function editFun(id) {
+    console.log(id, "cc");
+    if (editData && editData.assetCategory) {
+      await axios
+        .put(`http://localhost:3001/editDepartment/${id}`, editData)
+        .then((resp) => {
+          console.log(resp);
+          setData(resp);
+          fetchInfo();
+        })
+        .catch((err) => {
+          console.log("err", err);
+        });
+    }
+  }
+  const delet = (id) => {
+    axios
+      .put(`http://localhost:3001/deleteDepartment/${id}`)
+      .then((resp) => {
+        fetchInfo();
+        navigate("/employees");
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
-  const onAdded = (e) => {
-    if (e.target.name == "name") {
-      setData({ ...data, name: e.target.value });
-    }
-    if (e.target.name == "gender") {
-      setData({ ...data, gender: e.target.value });
-    }
-    if (e.target.name == "depart") {
-      setData({ ...data, depart: e.target.value });
-    }
-  };
-  return (
+  function fetchInfo() {
+    axios
+      .get("http://localhost:3001/getDepartment")
+      .then((resp) => {
+        setData(resp);
+        navigate("/employees");
+      })
+      .catch((err) => {
+        console.log("Err", err);
+      });
+  }
+  useEffect(() => {
+    fetchInfo();
+  }, []);
+
+  function onAdded(e) {
+    setAsset({ ...asset, assetCategory: e.target.value });
+  }
+  function onEdit(e) {
+    setEditData({ ...editData, assetCategory: e.target.value });
+  }
+  {
+    /* return (
     <div>
       <Header />
       <div className="container-fluid">
@@ -71,11 +128,70 @@ function Employee() {
               </tbody>
             </table>
           </div>
+        </div> */
+  }
+
+  return (
+    <div>
+      <Header />
+      <div className="row">
+        <div className="col-8">
+          <h5>Employees</h5>
+          <table className="table" key={1}>
+            <thead className="table-info">
+              <tr>
+                <th>Name</th>
+                <th>gender</th>
+                <th>department</th>
+                <th>Records</th>
+                <th>Delete</th>
+                <th>edit</th>
+              </tr>
+            </thead>
+            {data && data.data.data !== undefined ? (
+              <tbody>
+                {data.data.data.map((item, index) => (
+                  <tr className="table-secondary">
+                    {item.isDelete == "false" ? (
+                      <>
+                        <td className="table-success"></td>
+                        <td className="table-success"></td>
+                        <td className="table-success"></td>
+                        <td className="table-success"></td>
+                        <td>
+                          <button
+                            className="btn btn-success"
+                            type="button"
+                            onClick={() => delet(item.id)}
+                          >
+                            delete
+                          </button>
+                        </td>
+                        <td>
+                          <button
+                            type="button"
+                            onClick={() => setid(item.id)}
+                            className="btn btn-primary"
+                            data-bs-toggle="modal"
+                            data-bs-target="#exampleModal1"
+                          >
+                            edit
+                          </button>
+                        </td>
+                      </>
+                    ) : null}
+                  </tr>
+                ))}
+              </tbody>
+            ) : null}
+          </table>
         </div>
-        {/* pop to create employee */}
+        <EmployeePop onAdded={onAdded} addCategory={addCategory} />
+      </div>
+      <div>
         <div
           className="modal fade"
-          id="exampleModal"
+          id="exampleModal1"
           tabIndex="-1"
           aria-labelledby="exampleModalLabel"
           aria-hidden="true"
@@ -97,46 +213,12 @@ function Employee() {
                 <div className="input-group mb-3">
                   <input
                     type="text"
-                    name="name"
                     className="form-control"
-                    placeholder="name"
+                    placeholder="Asset name"
                     aria-label="Recipient's username"
                     aria-describedby="basic-addon2"
-                    onChange={onAdded}
+                    onChange={onEdit}
                   />
-                </div>
-                <div>
-                  <select
-                    className="form-select"
-                    defaultValue={"DEFAULT"}
-                    onChange={onAdded}
-                    name="gender"
-                  >
-                    <option value="DEFAULT" disabled>
-                      Select gender
-                    </option>
-                    <option value="male">male</option>
-                    <option value="female">female</option>
-                  </select>
-                </div>
-                <div>
-                  <select
-                    className="form-select mt-4"
-                    defaultValue={"DEFAULT"}
-                    onChange={onAdded}
-                    name="depart"
-                  >
-                    <option value="DEFAULT" disabled>
-                      Select Department
-                    </option>
-                    <option value="react">React</option>
-                    <option value="node">Node</option>
-                    <option value="angular">Angular</option>
-                    <option value="android">Android</option>
-                    <option value="designer">Designer</option>
-                    <option value="python">Python</option>
-                    <option value="flutter">Flutter</option>
-                  </select>
                 </div>
               </div>
               <div className="modal-footer">
@@ -150,9 +232,10 @@ function Employee() {
                 <button
                   type="button"
                   className="btn btn-primary"
-                  onClick={() => addemployee()}
+                  onClick={() => editFun(idd)}
+                  data-bs-dismiss="modal"
                 >
-                  Add
+                  Save changes
                 </button>
               </div>
             </div>

@@ -1,6 +1,6 @@
 import React from "react";
 
-function CategoryPop({onAdded,addCategory}) {
+function DepartmentPop({ onAdded, addCategory }) {
   return (
     <>
       <div
@@ -77,4 +77,4 @@ function CategoryPop({onAdded,addCategory}) {
   );
 }
 
-export default CategoryPop;
+export default DepartmentPop

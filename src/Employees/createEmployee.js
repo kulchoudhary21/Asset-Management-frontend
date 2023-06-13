@@ -1,10 +1,9 @@
 import React from "react";
-
-function CategoryPop({onAdded,addCategory}) {
+function EmployeePop({ onAdded, addCategory }) {
   return (
     <>
       <div
-        className="col-6"
+        className="col-2"
         style={{
           direction: "rtl",
           marginLeft: "inherit",
@@ -77,4 +76,4 @@ function CategoryPop({onAdded,addCategory}) {
   );
 }
 
-export default CategoryPop;
+export default EmployeePop;

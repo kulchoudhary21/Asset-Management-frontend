@@ -2,14 +2,14 @@ import React, { useEffect, useState } from "react";
 import Header from "../Header";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import CategoryPop from "./createCategory";
+import DepartmentPop from "./createDepartment";
 const assetCategory = () => {
   return { assetCategory: "", isDelete: "false" };
 };
 const editCategory1 = () => {
   return { assetCategory: "" };
 };
-function Category() {
+function Department() {
   const [asset, setAsset] = useState(() => assetCategory());
   const [data, setData] = useState();
   const [editData, setEditData] = useState(() => editCategory1());
@@ -20,19 +20,19 @@ function Category() {
     console.log(asset);
     if (asset && asset.assetCategory) {
       await axios
-        .post("http://localhost:3001/assetCreateCategory", asset)
+        .post("http://localhost:3001/createDepartment", asset)
         .then((resp) => {
           setData(resp);
-          navigate("/category");
+          navigate("/department");
         })
         .catch((err) => {
           console.log("err", err);
         });
       await axios
-        .get("http://localhost:3001/assetGetCategory")
+        .get("http://localhost:3001/getDepartment")
         .then((resp) => {
           setData(resp);
-          navigate("/category");
+          navigate("/department");
         })
         .catch((err) => {
           console.log(err);
@@ -44,7 +44,7 @@ function Category() {
     console.log(id, "cc");
     if (editData && editData.assetCategory) {
       await axios
-        .put(`http://localhost:3001/editCategory/${id}`, editData)
+        .put(`http://localhost:3001/editDepartment/${id}`, editData)
         .then((resp) => {
           console.log(resp);
           setData(resp);
@@ -58,10 +58,10 @@ function Category() {
   }
   const delet = (id) => {
     axios
-      .put(`http://localhost:3001/deleteCategory/${id}`)
+      .put(`http://localhost:3001/deleteDepartment/${id}`)
       .then((resp) => {
         fetchInfo();
-        navigate("/category");
+        navigate("/department");
       })
       .catch((err) => {
         console.log(err);
@@ -69,10 +69,10 @@ function Category() {
   };
   function fetchInfo() {
     axios
-      .get("http://localhost:3001/assetGetCategory")
+      .get("http://localhost:3001/getDepartment")
       .then((resp) => {
         setData(resp);
-        navigate("/category");
+        navigate("/department");
       })
       .catch((err) => {
         console.log("Err", err);
@@ -108,7 +108,7 @@ function Category() {
                   <tr key={index}>
                     {item.isDelete == "false" ? (
                       <>
-                        <td>{item.asset}</td>
+                        <td>{item.department}</td>
                         <td>
                           <button
                             className="btn btn-success"
@@ -137,7 +137,7 @@ function Category() {
             ) : null}
           </table>
         </div>
-        <CategoryPop onAdded={onAdded} addCategory={addCategory} />
+        <DepartmentPop onAdded={onAdded} addCategory={addCategory} />
       </div>
       <div>
         <div
@@ -197,4 +197,4 @@ function Category() {
   );
 }
 
-export default Category;
+export default Department

@@ -9,6 +9,7 @@ import { useRoutes } from "react-router-dom";
 import Category from "./src/Category/Category";
 import Asset from "./src/Assets/Asset";
 import Employee from "./src/Employees/Employee";
+import Department from "./src/Department/Department";
 function App() {
   const [isLogin, setIsLogin] = useState(false);
   const login = () => {
@@ -49,6 +50,10 @@ function App() {
         {
           path: "employees",
           element: <Employee />,
+        },
+        {
+          path: "department",
+          element: <Department />,
         },
       ],
     },

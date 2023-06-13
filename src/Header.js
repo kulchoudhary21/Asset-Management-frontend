@@ -49,6 +49,15 @@ function Header({ isLogin }) {
                   Employess
                 </Link>
               </li>
+              <li className="nav-item">
+                <Link
+                  className="nav-link active"
+                  aria-current="page"
+                  to="/department"
+                >
+                  Department
+                </Link>
+              </li>
               <div>
                 <li className="nav-item">
                   <Link

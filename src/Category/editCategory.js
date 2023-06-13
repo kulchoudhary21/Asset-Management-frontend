@@ -1,29 +1,25 @@
-import React from "react";
+import React, { useEffect } from "react";
 
-function CategoryPop({onAdded,addCategory}) {
+function EditCategory({ onEdit, editFun, editId }) {
+  useEffect(() => {
+    console.log("cisdi", editId);
+  }, [editId]);
   return (
     <>
-      <div
-        className="col-6"
-        style={{
-          direction: "rtl",
-          marginLeft: "inherit",
-          paddingRight: "5%",
-        }}
-      >
+      <div className="col-6">
         <button
           type="button"
           className="btn btn-primary"
           data-bs-toggle="modal"
-          data-bs-target="#exampleModal"
+          data-bs-target="#exampleModal1"
         >
-          create category
-        </button>
-      </div>
+          edit
+        </button> 
+      </div> 
 
       <div
         className="modal fade"
-        id="exampleModal"
+        id="exampleModal1"
         tabIndex="-1"
         aria-labelledby="exampleModalLabel"
         aria-hidden="true"
@@ -49,7 +45,7 @@ function CategoryPop({onAdded,addCategory}) {
                   placeholder="Asset name"
                   aria-label="Recipient's username"
                   aria-describedby="basic-addon2"
-                  onChange={onAdded}
+                  onChange={onEdit}
                 />
               </div>
             </div>
@@ -64,8 +60,7 @@ function CategoryPop({onAdded,addCategory}) {
               <button
                 type="button"
                 className="btn btn-primary"
-                data-bs-toggle="modal"
-                onClick={() => addCategory()}
+                onClick={editFun(editId)}
               >
                 Save changes
               </button>
@@ -77,4 +72,4 @@ function CategoryPop({onAdded,addCategory}) {
   );
 }
 
-export default CategoryPop;
+export default EditCategory;

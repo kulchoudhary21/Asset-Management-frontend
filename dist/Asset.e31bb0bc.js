@@ -15809,7 +15809,8 @@ function _iterableToArrayLimit(arr, i) { var _i = null == arr ? null : "undefine
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 var assetCategory = function assetCategory() {
   return {
-    assetCategory: ""
+    assetCategory: "",
+    isDelete: "false"
   };
 };
 function Category() {
@@ -15862,12 +15863,21 @@ function Category() {
     }));
     return _addCategory.apply(this, arguments);
   }
+  var delet = function delet(id) {
+    _axios.default.put("http://localhost:3001/deleteCategory/".concat(id)).then(function (resp) {
+      console.log(resp);
+      fetchInfo();
+      navigate("/category");
+    }).catch(function (err) {
+      console.log(err);
+    });
+  };
   function fetchInfo() {
     _axios.default.get("http://localhost:3001/assetGetCategory").then(function (resp) {
       setData(resp);
       navigate("/category");
     }).catch(function (err) {
-      console.log(err);
+      console.log("Err", err);
     });
   }
   (0, _react.useEffect)(function () {
@@ -15895,16 +15905,24 @@ function Category() {
     key: 3
   }, /*#__PURE__*/_react.default.createElement("th", {
     scope: "col"
-  }, "id"), /*#__PURE__*/_react.default.createElement("th", {
-    scope: "col"
-  }, "Asset"))), data && data.data.data !== undefined ? /*#__PURE__*/_react.default.createElement("tbody", {
+  }, "Asset"), /*#__PURE__*/_react.default.createElement("th", null, "Delete"), /*#__PURE__*/_react.default.createElement("th", null, "Edit"))), data && data.data.data !== undefined ? /*#__PURE__*/_react.default.createElement("tbody", {
     key: 4
   }, data.data.data.map(function (item, index) {
     return /*#__PURE__*/_react.default.createElement("tr", {
       key: index
-    }, /*#__PURE__*/_react.default.createElement("th", {
-      scope: "row"
-    }, item.id), /*#__PURE__*/_react.default.createElement("td", null, item.asset));
+    }, item.isDelete == "false" ? /*#__PURE__*/_react.default.createElement(_react.default.Fragment, null, /*#__PURE__*/_react.default.createElement("td", null, item.asset), /*#__PURE__*/_react.default.createElement("td", null, /*#__PURE__*/_react.default.createElement("button", {
+      className: "btn btn-success",
+      type: "button",
+      onClick: function onClick() {
+        return delet(item.id);
+      }
+    }, "delete")), /*#__PURE__*/_react.default.createElement("td", null, /*#__PURE__*/_react.default.createElement("button", {
+      type: "button",
+      className: "btn btn-secondary",
+      "data-bs-toggle": "modal",
+      "data-bs-target": "#exampleModal",
+      name: "edit"
+    }, "edit"))) : null);
   })) : null)), /*#__PURE__*/_react.default.createElement("div", {
     className: "col-6",
     style: {
@@ -42633,7 +42651,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "37483" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "43965" + '/');
   ws.onmessage = function (event) {
     checkedAssets = {};
     assetsToAccept = [];

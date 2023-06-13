@@ -3,7 +3,7 @@ import Header from "../Header";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 const assetCategory = () => {
-  return { assetCategory: "" };
+  return { assetCategory: "", isDelete: "false" };
 };
 function Category() {
   const [asset, setAsset] = useState(() => assetCategory());
@@ -34,7 +34,18 @@ function Category() {
         });
     }
   }
-
+  const delet = (id) => {
+    axios
+      .put(`http://localhost:3001/deleteCategory/${id}`)
+      .then((resp) => {
+        console.log(resp);
+        fetchInfo();
+        navigate("/category");
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
   function fetchInfo() {
     axios
       .get("http://localhost:3001/assetGetCategory")
@@ -43,7 +54,7 @@ function Category() {
         navigate("/category");
       })
       .catch((err) => {
-        console.log(err);
+        console.log("Err", err);
       });
   }
   useEffect(() => {
@@ -66,16 +77,40 @@ function Category() {
           <table className="table" key={1}>
             <thead key={2}>
               <tr key={3}>
-                <th scope="col">id</th>
                 <th scope="col">Asset</th>
+                <th>Delete</th>
+                <th>Edit</th>
               </tr>
             </thead>
             {data && data.data.data !== undefined ? (
               <tbody key={4}>
                 {data.data.data.map((item, index) => (
                   <tr key={index}>
-                    <th scope="row">{item.id}</th>
-                    <td>{item.asset}</td>
+                    {item.isDelete == "false" ? (
+                      <>
+                        <td>{item.asset}</td>
+                        <td>
+                          <button
+                            className="btn btn-success"
+                            type="button"
+                            onClick={() => delet(item.id)}
+                          >
+                            delete
+                          </button>
+                        </td>
+                        <td>
+                          <button
+                            type="button"
+                            className="btn btn-secondary"
+                            data-bs-toggle="modal"
+                            data-bs-target="#exampleModal"
+                            name="edit"
+                          >
+                            edit
+                          </button>
+                        </td>
+                      </>
+                    ) : null}
                   </tr>
                 ))}
               </tbody>

@@ -6,7 +6,7 @@ function Logout({ logout }) {
   useEffect(() => {
     logout();
     navigate("/")
-  }, []);
+  }, []); 
   return <div key={1}></div>;
 }
 

@@ -4,23 +4,25 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import EmployeePop from "./createEmployee";
 const assetCategory = () => {
-  return { assetCategory: "", isDelete: "false" };
+  return { name: "", department: "", gender: "", isDelete: "false" };
 };
 const editCategory1 = () => {
-  return { assetCategory: "" };
+  return { name: "", department: "", gender: "" };
 };
 function Employee() {
   const [asset, setAsset] = useState(() => assetCategory());
   const [data, setData] = useState();
   const [editData, setEditData] = useState(() => editCategory1());
+  const [depart, setDepart] = useState();
   const [idd, setid] = useState();
+  const [dd, setdd] = useState();
   const navigate = useNavigate();
 
   async function addCategory() {
     console.log(asset);
-    if (asset && asset.assetCategory) {
+    if (asset && asset.name && asset.department && asset.gender) {
       await axios
-        .post("http://localhost:3001/createDepartment", asset)
+        .post("http://localhost:3001/createEmployee", asset)
         .then((resp) => {
           setData(resp);
           navigate("/employees");
@@ -29,22 +31,26 @@ function Employee() {
           console.log("err", err);
         });
       await axios
-        .get("http://localhost:3001/getDepartment")
+        .get("http://localhost:3001/getEmployee")
         .then((resp) => {
           setData(resp);
           navigate("/employees");
         })
         .catch((err) => {
           console.log(err);
+          xsxsssss;
         });
     }
   }
 
   async function editFun(id) {
     console.log(id, "cc");
-    if (editData && editData.assetCategory) {
+    console.log("-", id, editData);
+    console.log("--", editData);
+    if (editData && editData.name && editData.gender && editData.department) {
+      console.log("jhh;");
       await axios
-        .put(`http://localhost:3001/editDepartment/${id}`, editData)
+        .put(`http://localhost:3001/editEmployee/${id}`, editData)
         .then((resp) => {
           console.log(resp);
           setData(resp);
@@ -57,7 +63,7 @@ function Employee() {
   }
   const delet = (id) => {
     axios
-      .put(`http://localhost:3001/deleteDepartment/${id}`)
+      .put(`http://localhost:3001/deleteEmployee/${id}`)
       .then((resp) => {
         fetchInfo();
         navigate("/employees");
@@ -68,67 +74,53 @@ function Employee() {
   };
   function fetchInfo() {
     axios
-      .get("http://localhost:3001/getDepartment")
+      .get("http://localhost:3001/getEmployee")
       .then((resp) => {
         setData(resp);
+        console.log("dd", data);
         navigate("/employees");
       })
       .catch((err) => {
         console.log("Err", err);
       });
   }
+  function fetchDepart() {
+    axios
+      .get("http://localhost:3001/getDepartment")
+      .then((resp) => {
+        resp.data.data.map((item) => {
+          setdd(item.department);
+        });
+        setDepart(resp);
+        navigate("/employees");
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
   useEffect(() => {
     fetchInfo();
+    fetchDepart();
   }, []);
 
   function onAdded(e) {
-    setAsset({ ...asset, assetCategory: e.target.value });
+    if (e.target.name == "name") setAsset({ ...asset, name: e.target.value });
+
+    if (e.target.name == "department")
+      setAsset({ ...asset, department: e.target.value });
+
+    if (e.target.name == "gender")
+      setAsset({ ...asset, gender: e.target.value });
   }
   function onEdit(e) {
-    setEditData({ ...editData, assetCategory: e.target.value });
-  }
-  {
-    /* return (
-    <div>
-      <Header />
-      <div className="container-fluid">
-        <div className="row">
-          <div className="col-10">
-            <label>Employees</label>
-          </div>
-          <div className="col-2">
-            <button
-              className="btn btn-primary"
-              data-bs-toggle="modal"
-              data-bs-target="#exampleModal"
-              style={{ marginTop: "10px", marginBottom: "10px" }}
-            >
-              Add Employee
-            </button>
-          </div>
-          <div className="col-6">
-            <table className="table table-primary">
-              <thead className="table-info">
-                <tr>
-                  <th>id</th>
-                  <th>Name</th>
-                  <th>gender</th>
-                  <th>department</th>
-                  <th>Records</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr className="table-secondary">
-                  <td className="table-success">1</td>
-                  <td className="table-success">Kuldeep</td>
-                  <td className="table-success">male</td>
-                  <td className="table-success">js</td>
-                  <td className="table-success">0</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div> */
+    if (e.target.name == "name")
+      setEditData({ ...editData, name: e.target.value });
+
+    if (e.target.name == "department")
+      setEditData({ ...editData, department: e.target.value });
+
+    if (e.target.name == "gender")
+      setEditData({ ...editData, gender: e.target.value });
   }
 
   return (
@@ -137,7 +129,7 @@ function Employee() {
       <div className="row">
         <div className="col-8">
           <h5>Employees</h5>
-          <table className="table" key={1}>
+          <table className="table" key={11}>
             <thead className="table-info">
               <tr>
                 <th>Name</th>
@@ -149,20 +141,21 @@ function Employee() {
               </tr>
             </thead>
             {data && data.data.data !== undefined ? (
-              <tbody>
+              <tbody key={1}>
                 {data.data.data.map((item, index) => (
-                  <tr className="table-secondary">
+                  <tr className="table-secondary" key={index}>
                     {item.isDelete == "false" ? (
                       <>
-                        <td className="table-success"></td>
-                        <td className="table-success"></td>
-                        <td className="table-success"></td>
-                        <td className="table-success"></td>
+                        <td className="table-success">{item.name}</td>
+                        <td className="table-success">{item.gender}</td>
+                        <td className="table-success">{item.department}</td>
+                        <td className="table-success">{item.records}</td>
+
                         <td>
                           <button
                             className="btn btn-success"
                             type="button"
-                            onClick={() => delet(item.id)}
+                            onClick={() => delet(item.emp_id)}
                           >
                             delete
                           </button>
@@ -170,7 +163,7 @@ function Employee() {
                         <td>
                           <button
                             type="button"
-                            onClick={() => setid(item.id)}
+                            onClick={() => setid(item.emp_id)}
                             className="btn btn-primary"
                             data-bs-toggle="modal"
                             data-bs-target="#exampleModal1"
@@ -186,7 +179,12 @@ function Employee() {
             ) : null}
           </table>
         </div>
-        <EmployeePop onAdded={onAdded} addCategory={addCategory} />
+        <EmployeePop
+          onAdded={onAdded}
+          addCategory={addCategory}
+          depart={depart}
+          dd={dd}
+        />
       </div>
       <div>
         <div
@@ -213,12 +211,49 @@ function Employee() {
                 <div className="input-group mb-3">
                   <input
                     type="text"
+                    name="name"
                     className="form-control"
-                    placeholder="Asset name"
+                    placeholder="name"
                     aria-label="Recipient's username"
                     aria-describedby="basic-addon2"
                     onChange={onEdit}
                   />
+                </div>
+                <div>
+                  <select
+                    className="form-select"
+                    defaultValue={"DEFAULT"}
+                    onChange={onEdit}
+                    name="gender"
+                  >
+                    <option value="DEFAULT" disabled>
+                      Select gender
+                    </option>
+                    <option value="male">male</option>
+                    <option value="female">female</option>
+                  </select>
+                </div>
+                <div>
+                  <select
+                    className="form-select mt-4"
+                    defaultValue={"DEFAULT"}
+                    onChange={onEdit}
+                    name="department"
+                  
+                  >
+                    <option value="DEFAULT" disabled>
+                      Select Department
+                    </option>
+                    {depart && depart.data.data
+                      ? depart.data.data.map((item,index) => {
+                          return (
+                            <option value={item.department} key={index}>
+                              {item.department}
+                            </option>
+                          );
+                        })
+                      : null}
+                  </select>
                 </div>
               </div>
               <div className="modal-footer">

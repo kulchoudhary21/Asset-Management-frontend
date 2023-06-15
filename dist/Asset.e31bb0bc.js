@@ -16123,7 +16123,17 @@ var _react = _interopRequireDefault(require("react"));
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 function EmployeePop(_ref) {
   var onAdded = _ref.onAdded,
-    addCategory = _ref.addCategory;
+    addCategory = _ref.addCategory,
+    depart = _ref.depart;
+  console.log(depart);
+  if (depart && depart.data.data) {
+    depart.data.data.map(function (item) {
+      console.log(item.department);
+    });
+  }
+  // depart.data.data.map((item)=>{
+  //   console.log(item)
+  // })
   return /*#__PURE__*/_react.default.createElement(_react.default.Fragment, null, /*#__PURE__*/_react.default.createElement("div", {
     className: "col-2",
     style: {
@@ -16151,7 +16161,7 @@ function EmployeePop(_ref) {
   }, /*#__PURE__*/_react.default.createElement("h1", {
     className: "modal-title fs-5",
     id: "exampleModalLabel"
-  }, "Asset"), /*#__PURE__*/_react.default.createElement("button", {
+  }, "Employee"), /*#__PURE__*/_react.default.createElement("button", {
     type: "button",
     className: "btn-close",
     "data-bs-dismiss": "modal",
@@ -16162,12 +16172,38 @@ function EmployeePop(_ref) {
     className: "input-group mb-3"
   }, /*#__PURE__*/_react.default.createElement("input", {
     type: "text",
+    name: "name",
     className: "form-control",
-    placeholder: "Asset name",
+    placeholder: "Employee name",
     "aria-label": "Recipient's username",
     "aria-describedby": "basic-addon2",
     onChange: onAdded
-  }))), /*#__PURE__*/_react.default.createElement("div", {
+  })), /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement("select", {
+    className: "form-select",
+    defaultValue: "DEFAULT",
+    onChange: onAdded,
+    name: "gender"
+  }, /*#__PURE__*/_react.default.createElement("option", {
+    value: "DEFAULT",
+    disabled: true
+  }, "Select gender"), /*#__PURE__*/_react.default.createElement("option", {
+    value: "male"
+  }, "male"), /*#__PURE__*/_react.default.createElement("option", {
+    value: "female"
+  }, "female"))), /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement("select", {
+    className: "form-select mt-4",
+    defaultValue: "DEFAULT",
+    onChange: onAdded,
+    name: "department"
+  }, /*#__PURE__*/_react.default.createElement("option", {
+    value: "DEFAULT",
+    disabled: true
+  }, "Select Department"), depart && depart.data.data ? depart.data.data.map(function (item, index) {
+    return /*#__PURE__*/_react.default.createElement("option", {
+      value: item.department,
+      key: index
+    }, item.department);
+  }) : null))), /*#__PURE__*/_react.default.createElement("div", {
     className: "modal-footer"
   }, /*#__PURE__*/_react.default.createElement("button", {
     type: "button",
@@ -16216,13 +16252,17 @@ function _iterableToArrayLimit(arr, i) { var _i = null == arr ? null : "undefine
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 var assetCategory = function assetCategory() {
   return {
-    assetCategory: "",
+    name: "",
+    department: "",
+    gender: "",
     isDelete: "false"
   };
 };
 var editCategory1 = function editCategory1() {
   return {
-    assetCategory: ""
+    name: "",
+    department: "",
+    gender: ""
   };
 };
 function Employee() {
@@ -16244,8 +16284,16 @@ function Employee() {
     setEditData = _useState6[1];
   var _useState7 = (0, _react.useState)(),
     _useState8 = _slicedToArray(_useState7, 2),
-    idd = _useState8[0],
-    setid = _useState8[1];
+    depart = _useState8[0],
+    setDepart = _useState8[1];
+  var _useState9 = (0, _react.useState)(),
+    _useState10 = _slicedToArray(_useState9, 2),
+    idd = _useState10[0],
+    setid = _useState10[1];
+  var _useState11 = (0, _react.useState)(),
+    _useState12 = _slicedToArray(_useState11, 2),
+    dd = _useState12[0],
+    setdd = _useState12[1];
   var navigate = (0, _reactRouterDom.useNavigate)();
   function addCategory() {
     return _addCategory.apply(this, arguments);
@@ -16256,12 +16304,12 @@ function Employee() {
         while (1) switch (_context.prev = _context.next) {
           case 0:
             console.log(asset);
-            if (!(asset && asset.assetCategory)) {
+            if (!(asset && asset.name && asset.department && asset.gender)) {
               _context.next = 6;
               break;
             }
             _context.next = 4;
-            return _axios.default.post("http://localhost:3001/createDepartment", asset).then(function (resp) {
+            return _axios.default.post("http://localhost:3001/createEmployee", asset).then(function (resp) {
               setData(resp);
               navigate("/employees");
             }).catch(function (err) {
@@ -16269,11 +16317,12 @@ function Employee() {
             });
           case 4:
             _context.next = 6;
-            return _axios.default.get("http://localhost:3001/getDepartment").then(function (resp) {
+            return _axios.default.get("http://localhost:3001/getEmployee").then(function (resp) {
               setData(resp);
               navigate("/employees");
             }).catch(function (err) {
               console.log(err);
+              xsxsssss;
             });
           case 6:
           case "end":
@@ -16292,19 +16341,22 @@ function Employee() {
         while (1) switch (_context2.prev = _context2.next) {
           case 0:
             console.log(id, "cc");
-            if (!(editData && editData.assetCategory)) {
-              _context2.next = 4;
+            console.log("-", id, editData);
+            console.log("--", editData);
+            if (!(editData && editData.name && editData.gender && editData.department)) {
+              _context2.next = 7;
               break;
             }
-            _context2.next = 4;
-            return _axios.default.put("http://localhost:3001/editDepartment/".concat(id), editData).then(function (resp) {
+            console.log("jhh;");
+            _context2.next = 7;
+            return _axios.default.put("http://localhost:3001/editEmployee/".concat(id), editData).then(function (resp) {
               console.log(resp);
               setData(resp);
               fetchInfo();
             }).catch(function (err) {
               console.log("err", err);
             });
-          case 4:
+          case 7:
           case "end":
             return _context2.stop();
         }
@@ -16313,7 +16365,7 @@ function Employee() {
     return _editFun.apply(this, arguments);
   }
   var delet = function delet(id) {
-    _axios.default.put("http://localhost:3001/deleteDepartment/".concat(id)).then(function (resp) {
+    _axios.default.put("http://localhost:3001/deleteEmployee/".concat(id)).then(function (resp) {
       fetchInfo();
       navigate("/employees");
     }).catch(function (err) {
@@ -16321,68 +16373,50 @@ function Employee() {
     });
   };
   function fetchInfo() {
-    _axios.default.get("http://localhost:3001/getDepartment").then(function (resp) {
+    _axios.default.get("http://localhost:3001/getEmployee").then(function (resp) {
       setData(resp);
+      console.log("dd", data);
       navigate("/employees");
     }).catch(function (err) {
       console.log("Err", err);
     });
   }
+  function fetchDepart() {
+    _axios.default.get("http://localhost:3001/getDepartment").then(function (resp) {
+      resp.data.data.map(function (item) {
+        setdd(item.department);
+      });
+      setDepart(resp);
+      navigate("/employees");
+    }).catch(function (err) {
+      console.log(err);
+    });
+  }
   (0, _react.useEffect)(function () {
     fetchInfo();
+    fetchDepart();
   }, []);
   function onAdded(e) {
-    setAsset(_objectSpread(_objectSpread({}, asset), {}, {
-      assetCategory: e.target.value
+    if (e.target.name == "name") setAsset(_objectSpread(_objectSpread({}, asset), {}, {
+      name: e.target.value
+    }));
+    if (e.target.name == "department") setAsset(_objectSpread(_objectSpread({}, asset), {}, {
+      department: e.target.value
+    }));
+    if (e.target.name == "gender") setAsset(_objectSpread(_objectSpread({}, asset), {}, {
+      gender: e.target.value
     }));
   }
   function onEdit(e) {
-    setEditData(_objectSpread(_objectSpread({}, editData), {}, {
-      assetCategory: e.target.value
+    if (e.target.name == "name") setEditData(_objectSpread(_objectSpread({}, editData), {}, {
+      name: e.target.value
     }));
-  }
-  {
-    /* return (
-    <div>
-      <Header />
-      <div className="container-fluid">
-        <div className="row">
-          <div className="col-10">
-            <label>Employees</label>
-          </div>
-          <div className="col-2">
-            <button
-              className="btn btn-primary"
-              data-bs-toggle="modal"
-              data-bs-target="#exampleModal"
-              style={{ marginTop: "10px", marginBottom: "10px" }}
-            >
-              Add Employee
-            </button>
-          </div>
-          <div className="col-6">
-            <table className="table table-primary">
-              <thead className="table-info">
-                <tr>
-                  <th>id</th>
-                  <th>Name</th>
-                  <th>gender</th>
-                  <th>department</th>
-                  <th>Records</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr className="table-secondary">
-                  <td className="table-success">1</td>
-                  <td className="table-success">Kuldeep</td>
-                  <td className="table-success">male</td>
-                  <td className="table-success">js</td>
-                  <td className="table-success">0</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div> */
+    if (e.target.name == "department") setEditData(_objectSpread(_objectSpread({}, editData), {}, {
+      department: e.target.value
+    }));
+    if (e.target.name == "gender") setEditData(_objectSpread(_objectSpread({}, editData), {}, {
+      gender: e.target.value
+    }));
   }
   return /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement(_Header.default, null), /*#__PURE__*/_react.default.createElement("div", {
     className: "row"
@@ -16390,30 +16424,33 @@ function Employee() {
     className: "col-8"
   }, /*#__PURE__*/_react.default.createElement("h5", null, "Employees"), /*#__PURE__*/_react.default.createElement("table", {
     className: "table",
-    key: 1
+    key: 11
   }, /*#__PURE__*/_react.default.createElement("thead", {
     className: "table-info"
-  }, /*#__PURE__*/_react.default.createElement("tr", null, /*#__PURE__*/_react.default.createElement("th", null, "Name"), /*#__PURE__*/_react.default.createElement("th", null, "gender"), /*#__PURE__*/_react.default.createElement("th", null, "department"), /*#__PURE__*/_react.default.createElement("th", null, "Records"), /*#__PURE__*/_react.default.createElement("th", null, "Delete"), /*#__PURE__*/_react.default.createElement("th", null, "edit"))), data && data.data.data !== undefined ? /*#__PURE__*/_react.default.createElement("tbody", null, data.data.data.map(function (item, index) {
+  }, /*#__PURE__*/_react.default.createElement("tr", null, /*#__PURE__*/_react.default.createElement("th", null, "Name"), /*#__PURE__*/_react.default.createElement("th", null, "gender"), /*#__PURE__*/_react.default.createElement("th", null, "department"), /*#__PURE__*/_react.default.createElement("th", null, "Records"), /*#__PURE__*/_react.default.createElement("th", null, "Delete"), /*#__PURE__*/_react.default.createElement("th", null, "edit"))), data && data.data.data !== undefined ? /*#__PURE__*/_react.default.createElement("tbody", {
+    key: 1
+  }, data.data.data.map(function (item, index) {
     return /*#__PURE__*/_react.default.createElement("tr", {
-      className: "table-secondary"
+      className: "table-secondary",
+      key: index
     }, item.isDelete == "false" ? /*#__PURE__*/_react.default.createElement(_react.default.Fragment, null, /*#__PURE__*/_react.default.createElement("td", {
       className: "table-success"
-    }), /*#__PURE__*/_react.default.createElement("td", {
+    }, item.name), /*#__PURE__*/_react.default.createElement("td", {
       className: "table-success"
-    }), /*#__PURE__*/_react.default.createElement("td", {
+    }, item.gender), /*#__PURE__*/_react.default.createElement("td", {
       className: "table-success"
-    }), /*#__PURE__*/_react.default.createElement("td", {
+    }, item.department), /*#__PURE__*/_react.default.createElement("td", {
       className: "table-success"
-    }), /*#__PURE__*/_react.default.createElement("td", null, /*#__PURE__*/_react.default.createElement("button", {
+    }, item.records), /*#__PURE__*/_react.default.createElement("td", null, /*#__PURE__*/_react.default.createElement("button", {
       className: "btn btn-success",
       type: "button",
       onClick: function onClick() {
-        return delet(item.id);
+        return delet(item.emp_id);
       }
     }, "delete")), /*#__PURE__*/_react.default.createElement("td", null, /*#__PURE__*/_react.default.createElement("button", {
       type: "button",
       onClick: function onClick() {
-        return setid(item.id);
+        return setid(item.emp_id);
       },
       className: "btn btn-primary",
       "data-bs-toggle": "modal",
@@ -16421,7 +16458,9 @@ function Employee() {
     }, "edit"))) : null);
   })) : null)), /*#__PURE__*/_react.default.createElement(_createEmployee.default, {
     onAdded: onAdded,
-    addCategory: addCategory
+    addCategory: addCategory,
+    depart: depart,
+    dd: dd
   })), /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement("div", {
     className: "modal fade",
     id: "exampleModal1",
@@ -16448,12 +16487,38 @@ function Employee() {
     className: "input-group mb-3"
   }, /*#__PURE__*/_react.default.createElement("input", {
     type: "text",
+    name: "name",
     className: "form-control",
-    placeholder: "Asset name",
+    placeholder: "name",
     "aria-label": "Recipient's username",
     "aria-describedby": "basic-addon2",
     onChange: onEdit
-  }))), /*#__PURE__*/_react.default.createElement("div", {
+  })), /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement("select", {
+    className: "form-select",
+    defaultValue: "DEFAULT",
+    onChange: onEdit,
+    name: "gender"
+  }, /*#__PURE__*/_react.default.createElement("option", {
+    value: "DEFAULT",
+    disabled: true
+  }, "Select gender"), /*#__PURE__*/_react.default.createElement("option", {
+    value: "male"
+  }, "male"), /*#__PURE__*/_react.default.createElement("option", {
+    value: "female"
+  }, "female"))), /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement("select", {
+    className: "form-select mt-4",
+    defaultValue: "DEFAULT",
+    onChange: onEdit,
+    name: "department"
+  }, /*#__PURE__*/_react.default.createElement("option", {
+    value: "DEFAULT",
+    disabled: true
+  }, "Select Department"), depart && depart.data.data ? depart.data.data.map(function (item, index) {
+    return /*#__PURE__*/_react.default.createElement("option", {
+      value: item.department,
+      key: index
+    }, item.department);
+  }) : null))), /*#__PURE__*/_react.default.createElement("div", {
     className: "modal-footer"
   }, /*#__PURE__*/_react.default.createElement("button", {
     type: "button",
@@ -43258,7 +43323,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "35911" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "34479" + '/');
   ws.onmessage = function (event) {
     checkedAssets = {};
     assetsToAccept = [];

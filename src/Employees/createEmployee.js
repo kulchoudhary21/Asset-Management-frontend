@@ -1,5 +1,14 @@
 import React from "react";
-function EmployeePop({ onAdded, addCategory }) {
+function EmployeePop({ onAdded, addCategory, depart }) {
+  console.log(depart);
+  if (depart && depart.data.data) {
+    depart.data.data.map((item) => {
+      console.log(item.department);
+    });
+  }
+  // depart.data.data.map((item)=>{
+  //   console.log(item)
+  // })
   return (
     <>
       <div
@@ -31,7 +40,7 @@ function EmployeePop({ onAdded, addCategory }) {
           <div className="modal-content">
             <div className="modal-header">
               <h1 className="modal-title fs-5" id="exampleModalLabel">
-                Asset
+                Employee
               </h1>
               <button
                 type="button"
@@ -44,12 +53,48 @@ function EmployeePop({ onAdded, addCategory }) {
               <div className="input-group mb-3">
                 <input
                   type="text"
+                  name="name"
                   className="form-control"
-                  placeholder="Asset name"
+                  placeholder="Employee name"
                   aria-label="Recipient's username"
                   aria-describedby="basic-addon2"
                   onChange={onAdded}
                 />
+              </div>
+              <div>
+                <select
+                  className="form-select"
+                  defaultValue={"DEFAULT"}
+                  onChange={onAdded}
+                  name="gender"
+                >
+                  <option value="DEFAULT" disabled>
+                    Select gender
+                  </option>
+                  <option value="male">male</option>
+                  <option value="female">female</option>
+                </select>
+              </div>
+              <div>
+                <select
+                  className="form-select mt-4"
+                  defaultValue={"DEFAULT"}
+                  onChange={onAdded}
+                  name="department"
+                >
+                  <option value="DEFAULT" disabled>
+                    Select Department
+                  </option>
+                  {depart && depart.data.data
+                    ? depart.data.data.map((item, index) => {
+                        return (
+                          <option value={item.department} key={index}>
+                            {item.department}
+                          </option>
+                        );
+                      })
+                    : null}
+                </select>
               </div>
             </div>
             <div className="modal-footer">

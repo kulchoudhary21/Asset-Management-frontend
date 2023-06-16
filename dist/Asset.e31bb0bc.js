@@ -10053,8 +10053,8 @@ function Header(_ref) {
   }, /*#__PURE__*/_react.default.createElement(_reactRouterDom.Link, {
     className: "nav-link active",
     "aria-current": "page",
-    to: "/assets"
-  }, "Assets")), /*#__PURE__*/_react.default.createElement("li", {
+    to: "/assign"
+  }, "Assign")), /*#__PURE__*/_react.default.createElement("li", {
     className: "nav-item"
   }, /*#__PURE__*/_react.default.createElement(_reactRouterDom.Link, {
     className: "nav-link active",
@@ -16097,7 +16097,7 @@ function Category() {
 }
 var _default = Category;
 exports.default = _default;
-},{"react":"node_modules/react/index.js","../Header":"src/Header.js","axios":"node_modules/axios/index.js","react-router-dom":"node_modules/react-router-dom/dist/index.js","./createCategory":"src/Category/createCategory.js"}],"src/Assets/Asset.js":[function(require,module,exports) {
+},{"react":"node_modules/react/index.js","../Header":"src/Header.js","axios":"node_modules/axios/index.js","react-router-dom":"node_modules/react-router-dom/dist/index.js","./createCategory":"src/Category/createCategory.js"}],"src/Assign/createAssign.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -16105,14 +16105,566 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.default = void 0;
 var _react = _interopRequireDefault(require("react"));
-var _Header = _interopRequireDefault(require("../Header"));
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-function Asset() {
-  return /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement(_Header.default, null), /*#__PURE__*/_react.default.createElement("div", null));
+function AssignPop(_ref) {
+  var onAdded = _ref.onAdded,
+    addCategory = _ref.addCategory,
+    depart = _ref.depart,
+    employeeName = _ref.employeeName,
+    category = _ref.category,
+    getIdd = _ref.getIdd;
+  return /*#__PURE__*/_react.default.createElement(_react.default.Fragment, null, /*#__PURE__*/_react.default.createElement("div", {
+    className: "col-2",
+    style: {
+      direction: "rtl",
+      marginLeft: "inherit",
+      paddingRight: "5%"
+    }
+  }, /*#__PURE__*/_react.default.createElement("button", {
+    type: "button",
+    className: "btn btn-primary",
+    "data-bs-toggle": "modal",
+    "data-bs-target": "#exampleModal"
+  }, "create category")), /*#__PURE__*/_react.default.createElement("div", {
+    className: "modal fade",
+    id: "exampleModal",
+    tabIndex: "-1",
+    "aria-labelledby": "exampleModalLabel",
+    "aria-hidden": "true"
+  }, /*#__PURE__*/_react.default.createElement("div", {
+    className: "modal-dialog"
+  }, /*#__PURE__*/_react.default.createElement("div", {
+    className: "modal-content"
+  }, /*#__PURE__*/_react.default.createElement("div", {
+    className: "modal-header"
+  }, /*#__PURE__*/_react.default.createElement("h1", {
+    className: "modal-title fs-5",
+    id: "exampleModalLabel"
+  }, "Employee"), /*#__PURE__*/_react.default.createElement("button", {
+    type: "button",
+    className: "btn-close",
+    "data-bs-dismiss": "modal",
+    "aria-label": "Close"
+  })), /*#__PURE__*/_react.default.createElement("div", {
+    className: "modal-body"
+  }, /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement("select", {
+    className: "form-select mt-4",
+    defaultValue: "DEFAULT",
+    onChange: onAdded,
+    name: "name"
+  }, /*#__PURE__*/_react.default.createElement("option", {
+    value: "DEFAULT",
+    disabled: true
+  }, "Employee name"), employeeName && employeeName.data.data ? employeeName.data.data.map(function (item, index) {
+    if (item.isDelete == "false") {
+      var arr = [];
+      arr.push(item.name);
+      arr.push(item.emp_id);
+      return /*#__PURE__*/_react.default.createElement("option", {
+        key: index,
+        value: arr
+      }, item.name);
+    }
+  }) : null)), /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement("select", {
+    className: "form-select mt-4",
+    defaultValue: "DEFAULT",
+    onChange: onAdded,
+    name: "department"
+  }, /*#__PURE__*/_react.default.createElement("option", {
+    value: "DEFAULT",
+    disabled: true
+  }, "Select Department"), depart && depart.data.data ? depart.data.data.map(function (item, index) {
+    if (item.isDelete == "false") {
+      return /*#__PURE__*/_react.default.createElement("option", {
+        value: item.department,
+        key: index
+      }, item.department);
+    }
+  }) : null)), /*#__PURE__*/_react.default.createElement("div", {
+    className: "input-group mb-3"
+  }, /*#__PURE__*/_react.default.createElement("select", {
+    className: "form-select mt-4",
+    defaultValue: "DEFAULT",
+    onChange: onAdded,
+    name: "category"
+  }, /*#__PURE__*/_react.default.createElement("option", {
+    value: "DEFAULT",
+    disabled: true
+  }, "Select asset category"), category && category.data.data ? category.data.data.map(function (item, index) {
+    if (item.isDelete == "false") {
+      return /*#__PURE__*/_react.default.createElement("option", {
+        value: item.asset,
+        key: index
+      }, item.asset);
+    }
+  }) : null)), /*#__PURE__*/_react.default.createElement("div", {
+    className: "input-group mb-3"
+  }, /*#__PURE__*/_react.default.createElement("input", {
+    type: "text",
+    name: "model",
+    className: "form-control",
+    placeholder: "Model name",
+    "aria-label": "Recipient's username",
+    "aria-describedby": "basic-addon2",
+    onChange: onAdded
+  })), /*#__PURE__*/_react.default.createElement("div", {
+    className: "input-group mb-3"
+  }, /*#__PURE__*/_react.default.createElement("input", {
+    type: "date",
+    name: "date",
+    className: "form-control",
+    placeholder: "Date",
+    "aria-label": "Recipient's username",
+    "aria-describedby": "basic-addon2",
+    onChange: onAdded
+  }))), /*#__PURE__*/_react.default.createElement("div", {
+    className: "modal-footer"
+  }, /*#__PURE__*/_react.default.createElement("button", {
+    type: "button",
+    className: "btn btn-secondary",
+    "data-bs-dismiss": "modal"
+  }, "Close"), /*#__PURE__*/_react.default.createElement("button", {
+    type: "button",
+    className: "btn btn-primary",
+    "data-bs-toggle": "modal",
+    onClick: function onClick() {
+      return addCategory();
+    }
+  }, "Save changes"))))));
 }
-var _default = Asset;
+var _default = AssignPop;
 exports.default = _default;
-},{"react":"node_modules/react/index.js","../Header":"src/Header.js"}],"src/Employees/createEmployee.js":[function(require,module,exports) {
+},{"react":"node_modules/react/index.js"}],"src/Assign/Assign.js":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+var _react = _interopRequireWildcard(require("react"));
+var _Header = _interopRequireDefault(require("../Header"));
+var _axios = _interopRequireDefault(require("axios"));
+var _reactRouterDom = require("react-router-dom");
+var _createAssign = _interopRequireDefault(require("./createAssign"));
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
+function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
+function _regeneratorRuntime() { "use strict"; /*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */ _regeneratorRuntime = function _regeneratorRuntime() { return exports; }; var exports = {}, Op = Object.prototype, hasOwn = Op.hasOwnProperty, defineProperty = Object.defineProperty || function (obj, key, desc) { obj[key] = desc.value; }, $Symbol = "function" == typeof Symbol ? Symbol : {}, iteratorSymbol = $Symbol.iterator || "@@iterator", asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator", toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag"; function define(obj, key, value) { return Object.defineProperty(obj, key, { value: value, enumerable: !0, configurable: !0, writable: !0 }), obj[key]; } try { define({}, ""); } catch (err) { define = function define(obj, key, value) { return obj[key] = value; }; } function wrap(innerFn, outerFn, self, tryLocsList) { var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator, generator = Object.create(protoGenerator.prototype), context = new Context(tryLocsList || []); return defineProperty(generator, "_invoke", { value: makeInvokeMethod(innerFn, self, context) }), generator; } function tryCatch(fn, obj, arg) { try { return { type: "normal", arg: fn.call(obj, arg) }; } catch (err) { return { type: "throw", arg: err }; } } exports.wrap = wrap; var ContinueSentinel = {}; function Generator() {} function GeneratorFunction() {} function GeneratorFunctionPrototype() {} var IteratorPrototype = {}; define(IteratorPrototype, iteratorSymbol, function () { return this; }); var getProto = Object.getPrototypeOf, NativeIteratorPrototype = getProto && getProto(getProto(values([]))); NativeIteratorPrototype && NativeIteratorPrototype !== Op && hasOwn.call(NativeIteratorPrototype, iteratorSymbol) && (IteratorPrototype = NativeIteratorPrototype); var Gp = GeneratorFunctionPrototype.prototype = Generator.prototype = Object.create(IteratorPrototype); function defineIteratorMethods(prototype) { ["next", "throw", "return"].forEach(function (method) { define(prototype, method, function (arg) { return this._invoke(method, arg); }); }); } function AsyncIterator(generator, PromiseImpl) { function invoke(method, arg, resolve, reject) { var record = tryCatch(generator[method], generator, arg); if ("throw" !== record.type) { var result = record.arg, value = result.value; return value && "object" == _typeof(value) && hasOwn.call(value, "__await") ? PromiseImpl.resolve(value.__await).then(function (value) { invoke("next", value, resolve, reject); }, function (err) { invoke("throw", err, resolve, reject); }) : PromiseImpl.resolve(value).then(function (unwrapped) { result.value = unwrapped, resolve(result); }, function (error) { return invoke("throw", error, resolve, reject); }); } reject(record.arg); } var previousPromise; defineProperty(this, "_invoke", { value: function value(method, arg) { function callInvokeWithMethodAndArg() { return new PromiseImpl(function (resolve, reject) { invoke(method, arg, resolve, reject); }); } return previousPromise = previousPromise ? previousPromise.then(callInvokeWithMethodAndArg, callInvokeWithMethodAndArg) : callInvokeWithMethodAndArg(); } }); } function makeInvokeMethod(innerFn, self, context) { var state = "suspendedStart"; return function (method, arg) { if ("executing" === state) throw new Error("Generator is already running"); if ("completed" === state) { if ("throw" === method) throw arg; return doneResult(); } for (context.method = method, context.arg = arg;;) { var delegate = context.delegate; if (delegate) { var delegateResult = maybeInvokeDelegate(delegate, context); if (delegateResult) { if (delegateResult === ContinueSentinel) continue; return delegateResult; } } if ("next" === context.method) context.sent = context._sent = context.arg;else if ("throw" === context.method) { if ("suspendedStart" === state) throw state = "completed", context.arg; context.dispatchException(context.arg); } else "return" === context.method && context.abrupt("return", context.arg); state = "executing"; var record = tryCatch(innerFn, self, context); if ("normal" === record.type) { if (state = context.done ? "completed" : "suspendedYield", record.arg === ContinueSentinel) continue; return { value: record.arg, done: context.done }; } "throw" === record.type && (state = "completed", context.method = "throw", context.arg = record.arg); } }; } function maybeInvokeDelegate(delegate, context) { var methodName = context.method, method = delegate.iterator[methodName]; if (undefined === method) return context.delegate = null, "throw" === methodName && delegate.iterator.return && (context.method = "return", context.arg = undefined, maybeInvokeDelegate(delegate, context), "throw" === context.method) || "return" !== methodName && (context.method = "throw", context.arg = new TypeError("The iterator does not provide a '" + methodName + "' method")), ContinueSentinel; var record = tryCatch(method, delegate.iterator, context.arg); if ("throw" === record.type) return context.method = "throw", context.arg = record.arg, context.delegate = null, ContinueSentinel; var info = record.arg; return info ? info.done ? (context[delegate.resultName] = info.value, context.next = delegate.nextLoc, "return" !== context.method && (context.method = "next", context.arg = undefined), context.delegate = null, ContinueSentinel) : info : (context.method = "throw", context.arg = new TypeError("iterator result is not an object"), context.delegate = null, ContinueSentinel); } function pushTryEntry(locs) { var entry = { tryLoc: locs[0] }; 1 in locs && (entry.catchLoc = locs[1]), 2 in locs && (entry.finallyLoc = locs[2], entry.afterLoc = locs[3]), this.tryEntries.push(entry); } function resetTryEntry(entry) { var record = entry.completion || {}; record.type = "normal", delete record.arg, entry.completion = record; } function Context(tryLocsList) { this.tryEntries = [{ tryLoc: "root" }], tryLocsList.forEach(pushTryEntry, this), this.reset(!0); } function values(iterable) { if (iterable) { var iteratorMethod = iterable[iteratorSymbol]; if (iteratorMethod) return iteratorMethod.call(iterable); if ("function" == typeof iterable.next) return iterable; if (!isNaN(iterable.length)) { var i = -1, next = function next() { for (; ++i < iterable.length;) if (hasOwn.call(iterable, i)) return next.value = iterable[i], next.done = !1, next; return next.value = undefined, next.done = !0, next; }; return next.next = next; } } return { next: doneResult }; } function doneResult() { return { value: undefined, done: !0 }; } return GeneratorFunction.prototype = GeneratorFunctionPrototype, defineProperty(Gp, "constructor", { value: GeneratorFunctionPrototype, configurable: !0 }), defineProperty(GeneratorFunctionPrototype, "constructor", { value: GeneratorFunction, configurable: !0 }), GeneratorFunction.displayName = define(GeneratorFunctionPrototype, toStringTagSymbol, "GeneratorFunction"), exports.isGeneratorFunction = function (genFun) { var ctor = "function" == typeof genFun && genFun.constructor; return !!ctor && (ctor === GeneratorFunction || "GeneratorFunction" === (ctor.displayName || ctor.name)); }, exports.mark = function (genFun) { return Object.setPrototypeOf ? Object.setPrototypeOf(genFun, GeneratorFunctionPrototype) : (genFun.__proto__ = GeneratorFunctionPrototype, define(genFun, toStringTagSymbol, "GeneratorFunction")), genFun.prototype = Object.create(Gp), genFun; }, exports.awrap = function (arg) { return { __await: arg }; }, defineIteratorMethods(AsyncIterator.prototype), define(AsyncIterator.prototype, asyncIteratorSymbol, function () { return this; }), exports.AsyncIterator = AsyncIterator, exports.async = function (innerFn, outerFn, self, tryLocsList, PromiseImpl) { void 0 === PromiseImpl && (PromiseImpl = Promise); var iter = new AsyncIterator(wrap(innerFn, outerFn, self, tryLocsList), PromiseImpl); return exports.isGeneratorFunction(outerFn) ? iter : iter.next().then(function (result) { return result.done ? result.value : iter.next(); }); }, defineIteratorMethods(Gp), define(Gp, toStringTagSymbol, "Generator"), define(Gp, iteratorSymbol, function () { return this; }), define(Gp, "toString", function () { return "[object Generator]"; }), exports.keys = function (val) { var object = Object(val), keys = []; for (var key in object) keys.push(key); return keys.reverse(), function next() { for (; keys.length;) { var key = keys.pop(); if (key in object) return next.value = key, next.done = !1, next; } return next.done = !0, next; }; }, exports.values = values, Context.prototype = { constructor: Context, reset: function reset(skipTempReset) { if (this.prev = 0, this.next = 0, this.sent = this._sent = undefined, this.done = !1, this.delegate = null, this.method = "next", this.arg = undefined, this.tryEntries.forEach(resetTryEntry), !skipTempReset) for (var name in this) "t" === name.charAt(0) && hasOwn.call(this, name) && !isNaN(+name.slice(1)) && (this[name] = undefined); }, stop: function stop() { this.done = !0; var rootRecord = this.tryEntries[0].completion; if ("throw" === rootRecord.type) throw rootRecord.arg; return this.rval; }, dispatchException: function dispatchException(exception) { if (this.done) throw exception; var context = this; function handle(loc, caught) { return record.type = "throw", record.arg = exception, context.next = loc, caught && (context.method = "next", context.arg = undefined), !!caught; } for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i], record = entry.completion; if ("root" === entry.tryLoc) return handle("end"); if (entry.tryLoc <= this.prev) { var hasCatch = hasOwn.call(entry, "catchLoc"), hasFinally = hasOwn.call(entry, "finallyLoc"); if (hasCatch && hasFinally) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } else if (hasCatch) { if (this.prev < entry.catchLoc) return handle(entry.catchLoc, !0); } else { if (!hasFinally) throw new Error("try statement without catch or finally"); if (this.prev < entry.finallyLoc) return handle(entry.finallyLoc); } } } }, abrupt: function abrupt(type, arg) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc <= this.prev && hasOwn.call(entry, "finallyLoc") && this.prev < entry.finallyLoc) { var finallyEntry = entry; break; } } finallyEntry && ("break" === type || "continue" === type) && finallyEntry.tryLoc <= arg && arg <= finallyEntry.finallyLoc && (finallyEntry = null); var record = finallyEntry ? finallyEntry.completion : {}; return record.type = type, record.arg = arg, finallyEntry ? (this.method = "next", this.next = finallyEntry.finallyLoc, ContinueSentinel) : this.complete(record); }, complete: function complete(record, afterLoc) { if ("throw" === record.type) throw record.arg; return "break" === record.type || "continue" === record.type ? this.next = record.arg : "return" === record.type ? (this.rval = this.arg = record.arg, this.method = "return", this.next = "end") : "normal" === record.type && afterLoc && (this.next = afterLoc), ContinueSentinel; }, finish: function finish(finallyLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.finallyLoc === finallyLoc) return this.complete(entry.completion, entry.afterLoc), resetTryEntry(entry), ContinueSentinel; } }, catch: function _catch(tryLoc) { for (var i = this.tryEntries.length - 1; i >= 0; --i) { var entry = this.tryEntries[i]; if (entry.tryLoc === tryLoc) { var record = entry.completion; if ("throw" === record.type) { var thrown = record.arg; resetTryEntry(entry); } return thrown; } } throw new Error("illegal catch attempt"); }, delegateYield: function delegateYield(iterable, resultName, nextLoc) { return this.delegate = { iterator: values(iterable), resultName: resultName, nextLoc: nextLoc }, "next" === this.method && (this.arg = undefined), ContinueSentinel; } }, exports; }
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); enumerableOnly && (symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; })), keys.push.apply(keys, symbols); } return keys; }
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = null != arguments[i] ? arguments[i] : {}; i % 2 ? ownKeys(Object(source), !0).forEach(function (key) { _defineProperty(target, key, source[key]); }) : Object.getOwnPropertyDescriptors ? Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)) : ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } return target; }
+function _defineProperty(obj, key, value) { key = _toPropertyKey(key); if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
+function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
+function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
+function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
+function _slicedToArray(arr, i) { return _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _unsupportedIterableToArray(arr, i) || _nonIterableRest(); }
+function _nonIterableRest() { throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
+function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
+function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) arr2[i] = arr[i]; return arr2; }
+function _iterableToArrayLimit(arr, i) { var _i = null == arr ? null : "undefined" != typeof Symbol && arr[Symbol.iterator] || arr["@@iterator"]; if (null != _i) { var _s, _e, _x, _r, _arr = [], _n = !0, _d = !1; try { if (_x = (_i = _i.call(arr)).next, 0 === i) { if (Object(_i) !== _i) return; _n = !1; } else for (; !(_n = (_s = _x.call(_i)).done) && (_arr.push(_s.value), _arr.length !== i); _n = !0); } catch (err) { _d = !0, _e = err; } finally { try { if (!_n && null != _i.return && (_r = _i.return(), Object(_r) !== _r)) return; } finally { if (_d) throw _e; } } return _arr; } }
+function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
+var assignCategory = function assignCategory() {
+  return {
+    emp_id: "",
+    emp_name: "",
+    department: "",
+    category: "",
+    model: "",
+    issueDate: "",
+    isDelete: "false"
+  };
+};
+var editCategory1 = function editCategory1() {
+  return {
+    emp_id: "",
+    emp_name: "",
+    department: "",
+    category: "",
+    model: "",
+    issueDate: ""
+  };
+};
+function Assign() {
+  var _useState = (0, _react.useState)(function () {
+      return assignCategory();
+    }),
+    _useState2 = _slicedToArray(_useState, 2),
+    asset = _useState2[0],
+    setAsset = _useState2[1];
+  var _useState3 = (0, _react.useState)(),
+    _useState4 = _slicedToArray(_useState3, 2),
+    data = _useState4[0],
+    setData = _useState4[1];
+  var _useState5 = (0, _react.useState)(function () {
+      return editCategory1();
+    }),
+    _useState6 = _slicedToArray(_useState5, 2),
+    editData = _useState6[0],
+    setEditData = _useState6[1];
+  var _useState7 = (0, _react.useState)(),
+    _useState8 = _slicedToArray(_useState7, 2),
+    depart = _useState8[0],
+    setDepart = _useState8[1];
+  var _useState9 = (0, _react.useState)(),
+    _useState10 = _slicedToArray(_useState9, 2),
+    employeeName = _useState10[0],
+    setNameEmployee = _useState10[1];
+  var _useState11 = (0, _react.useState)(),
+    _useState12 = _slicedToArray(_useState11, 2),
+    category = _useState12[0],
+    setCategory = _useState12[1];
+  var _useState13 = (0, _react.useState)(),
+    _useState14 = _slicedToArray(_useState13, 2),
+    empId = _useState14[0],
+    setEmpId = _useState14[1];
+  var _useState15 = (0, _react.useState)(),
+    _useState16 = _slicedToArray(_useState15, 2),
+    idd = _useState16[0],
+    setid = _useState16[1];
+  var _useState17 = (0, _react.useState)(),
+    _useState18 = _slicedToArray(_useState17, 2),
+    dd = _useState18[0],
+    setdd = _useState18[1];
+  var navigate = (0, _reactRouterDom.useNavigate)();
+  function addCategory() {
+    return _addCategory.apply(this, arguments);
+  }
+  function _addCategory() {
+    _addCategory = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee() {
+      return _regeneratorRuntime().wrap(function _callee$(_context) {
+        while (1) switch (_context.prev = _context.next) {
+          case 0:
+            console.log(asset);
+            if (!(asset && asset.emp_name && asset.department)) {
+              _context.next = 8;
+              break;
+            }
+            _context.next = 4;
+            return _axios.default.post("http://localhost:3001/createAssign", asset).then(function (resp) {
+              setData(resp);
+              navigate("/assign");
+            }).catch(function (err) {
+              console.log("err", err);
+            });
+          case 4:
+            _context.next = 6;
+            return _axios.default.get("http://localhost:3001/getAssign").then(function (resp) {
+              setData(resp);
+              navigate("/assign");
+            }).catch(function (err) {
+              console.log(err);
+            });
+          case 6:
+            _context.next = 9;
+            break;
+          case 8:
+            console.log("hihi");
+          case 9:
+          case "end":
+            return _context.stop();
+        }
+      }, _callee);
+    }));
+    return _addCategory.apply(this, arguments);
+  }
+  function editFun(_x2) {
+    return _editFun.apply(this, arguments);
+  }
+  function _editFun() {
+    _editFun = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee2(id) {
+      return _regeneratorRuntime().wrap(function _callee2$(_context2) {
+        while (1) switch (_context2.prev = _context2.next) {
+          case 0:
+            console.log("---dd--", editData);
+            console.log("idididi", id);
+            if (!(editData && editData.emp_name && editData.department && editData.category)) {
+              _context2.next = 5;
+              break;
+            }
+            _context2.next = 5;
+            return _axios.default.put("http://localhost:3001/editAssign/".concat(id), editData).then(function (resp) {
+              console.log(resp);
+              setData(resp);
+              fetchInfo();
+            }).catch(function (err) {
+              console.log("err", err);
+            });
+          case 5:
+          case "end":
+            return _context2.stop();
+        }
+      }, _callee2);
+    }));
+    return _editFun.apply(this, arguments);
+  }
+  var delet = function delet(id) {
+    console.log(id);
+    _axios.default.put("http://localhost:3001/deleteAssign/".concat(id)).then(function (resp) {
+      console.log(resp);
+      fetchInfo();
+      navigate("/assign");
+    }).catch(function (err) {
+      console.log(err);
+    });
+  };
+  function fetchInfo() {
+    _axios.default.get("http://localhost:3001/getAssign").then(function (resp) {
+      setData(resp);
+      console.log("dd", data);
+      navigate("/assign");
+    }).catch(function (err) {
+      console.log("Err", err);
+    });
+  }
+  function fetchDepart() {
+    _axios.default.get("http://localhost:3001/getDepartment").then(function (resp) {
+      resp.data.data.map(function (item) {
+        if (!item.isDelete) {
+          setdd(item.department);
+        }
+      });
+      setDepart(resp);
+      navigate("/assign");
+    }).catch(function (err) {
+      console.log(err);
+    });
+  }
+  function fetchEmployee() {
+    _axios.default.get("http://localhost:3001/getEmployee").then(function (resp) {
+      setNameEmployee(resp);
+      navigate("/assign");
+    }).catch(function (err) {
+      console.log(err);
+    });
+  }
+  function fetchCategory() {
+    _axios.default.get("http://localhost:3001/assetGetCategory").then(function (resp) {
+      setCategory(resp);
+      navigate("/assign");
+    }).catch(function (err) {
+      console.log(err);
+    });
+  }
+  (0, _react.useEffect)(function () {
+    fetchInfo();
+    fetchDepart();
+    fetchEmployee();
+    fetchCategory();
+  }, []);
+  function onAdded(e) {
+    if (e.target.name == "name") {
+      var arr = e.target.value.split(",");
+      setAsset(_objectSpread(_objectSpread({}, asset), {}, {
+        emp_name: arr[0],
+        emp_id: arr[1]
+      }));
+    }
+    if (e.target.name == "department") setAsset(_objectSpread(_objectSpread({}, asset), {}, {
+      department: e.target.value
+    }));
+    if (e.target.name == "date") {
+      console.log(e.target.value);
+      deleteAssign;
+      setAsset(_objectSpread(_objectSpread({}, asset), {}, {
+        issueDate: e.target.value
+      }));
+    }
+    if (e.target.name == "category") setAsset(_objectSpread(_objectSpread({}, asset), {}, {
+      category: e.target.value
+    }));
+    if (e.target.name == "model") setAsset(_objectSpread(_objectSpread({}, asset), {}, {
+      model: e.target.value
+    }));
+  }
+  function onEdit(e) {
+    console.log("HElllllll");
+    if (e.target.name == "name") {
+      var arr = e.target.value.split(",");
+      setEditData(_objectSpread(_objectSpread({}, editData), {}, {
+        emp_name: arr[0],
+        emp_id: arr[1]
+      }));
+    }
+    if (e.target.name == "department") setEditData(_objectSpread(_objectSpread({}, editData), {}, {
+      department: e.target.value
+    }));
+    if (e.target.name == "date") {
+      console.log(e.target.value);
+      // deleteAssign;
+      setEditData(_objectSpread(_objectSpread({}, editData), {}, {
+        issueDate: e.target.value
+      }));
+    }
+    if (e.target.name == "category") setEditData(_objectSpread(_objectSpread({}, editData), {}, {
+      category: e.target.value
+    }));
+    if (e.target.name == "model") setEditData(_objectSpread(_objectSpread({}, editData), {}, {
+      model: e.target.value
+    }));
+  }
+  var getIdd = function getIdd(id) {
+    console.log("id is", id);
+    setEmpId(id);
+  };
+  return /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement(_Header.default, null), /*#__PURE__*/_react.default.createElement("div", {
+    className: "row"
+  }, /*#__PURE__*/_react.default.createElement("div", {
+    className: "col-8"
+  }, /*#__PURE__*/_react.default.createElement("h5", null, "Employees"), /*#__PURE__*/_react.default.createElement("table", {
+    className: "table",
+    key: 11
+  }, /*#__PURE__*/_react.default.createElement("thead", {
+    className: "table-info"
+  }, /*#__PURE__*/_react.default.createElement("tr", null, /*#__PURE__*/_react.default.createElement("th", null, "Name"), /*#__PURE__*/_react.default.createElement("th", null, "department"), /*#__PURE__*/_react.default.createElement("th", null, "category"), /*#__PURE__*/_react.default.createElement("th", null, "Model"), /*#__PURE__*/_react.default.createElement("th", null, "Issue date"), /*#__PURE__*/_react.default.createElement("th", null, "Delete"), /*#__PURE__*/_react.default.createElement("th", null, "edit"))), data && data.data.data !== undefined ? /*#__PURE__*/_react.default.createElement("tbody", {
+    key: 1
+  }, data.data.data.map(function (item, index) {
+    return /*#__PURE__*/_react.default.createElement("tr", {
+      className: "table-secondary",
+      key: index
+    }, item.isDelete == "false" ? /*#__PURE__*/_react.default.createElement(_react.default.Fragment, null, /*#__PURE__*/_react.default.createElement("td", {
+      className: "table-success"
+    }, item.emp_name), /*#__PURE__*/_react.default.createElement("td", {
+      className: "table-success"
+    }, item.department), /*#__PURE__*/_react.default.createElement("td", {
+      className: "table-success"
+    }, item.category), /*#__PURE__*/_react.default.createElement("td", {
+      className: "table-success"
+    }, item.model), /*#__PURE__*/_react.default.createElement("td", {
+      className: "table-success"
+    }, item.issueDate), /*#__PURE__*/_react.default.createElement("td", null, /*#__PURE__*/_react.default.createElement("button", {
+      className: "btn btn-success",
+      type: "button",
+      onClick: function onClick() {
+        return delet(item.a_id);
+      }
+    }, "delete")), /*#__PURE__*/_react.default.createElement("td", null, /*#__PURE__*/_react.default.createElement("button", {
+      type: "button",
+      onClick: function onClick() {
+        return setid(item.a_id);
+      },
+      className: "btn btn-primary",
+      "data-bs-toggle": "modal",
+      "data-bs-target": "#exampleModal1"
+    }, "edit"))) : null);
+  })) : null)), /*#__PURE__*/_react.default.createElement(_createAssign.default, {
+    onAdded: onAdded,
+    addCategory: addCategory,
+    depart: depart,
+    dd: dd,
+    employeeName: employeeName,
+    getIdd: getIdd,
+    category: category
+  })), /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement("div", {
+    className: "modal fade",
+    id: "exampleModal1",
+    tabIndex: "-1",
+    "aria-labelledby": "exampleModalLabel",
+    "aria-hidden": "true"
+  }, /*#__PURE__*/_react.default.createElement("div", {
+    className: "modal-dialog"
+  }, /*#__PURE__*/_react.default.createElement("div", {
+    className: "modal-content"
+  }, /*#__PURE__*/_react.default.createElement("div", {
+    className: "modal-header"
+  }, /*#__PURE__*/_react.default.createElement("h1", {
+    className: "modal-title fs-5",
+    id: "exampleModalLabel"
+  }, "Asset assign"), /*#__PURE__*/_react.default.createElement("button", {
+    type: "button",
+    className: "btn-close",
+    "data-bs-dismiss": "modal",
+    "aria-label": "Close"
+  })), /*#__PURE__*/_react.default.createElement("div", {
+    className: "modal-body"
+  }, /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement("select", {
+    className: "form-select mt-4",
+    defaultValue: "DEFAULT",
+    onChange: onEdit,
+    name: "name"
+  }, /*#__PURE__*/_react.default.createElement("option", {
+    value: "DEFAULT",
+    disabled: true
+  }, "Employee name"), employeeName && employeeName.data.data ? employeeName.data.data.map(function (item, index) {
+    if (item.isDelete == "false") {
+      var arr = [];
+      arr.push(item.name);
+      arr.push(item.emp_id);
+      return /*#__PURE__*/_react.default.createElement("option", {
+        key: index,
+        value: arr
+      }, item.name);
+    }
+  }) : null)), /*#__PURE__*/_react.default.createElement("div", null, /*#__PURE__*/_react.default.createElement("select", {
+    className: "form-select mt-4",
+    defaultValue: "DEFAULT",
+    onChange: onEdit,
+    name: "department"
+  }, /*#__PURE__*/_react.default.createElement("option", {
+    value: "DEFAULT",
+    disabled: true
+  }, "Select Department"), depart && depart.data.data ? depart.data.data.map(function (item, index) {
+    if (item.isDelete == "false") {
+      return /*#__PURE__*/_react.default.createElement("option", {
+        value: item.department,
+        key: index
+      }, item.department);
+    }
+  }) : null)), /*#__PURE__*/_react.default.createElement("div", {
+    className: "input-group mb-3"
+  }, /*#__PURE__*/_react.default.createElement("select", {
+    className: "form-select mt-4",
+    defaultValue: "DEFAULT",
+    onChange: onEdit,
+    name: "category"
+  }, /*#__PURE__*/_react.default.createElement("option", {
+    value: "DEFAULT",
+    disabled: true
+  }, "Select asset category"), category && category.data.data ? category.data.data.map(function (item, index) {
+    if (item.isDelete == "false") {
+      return /*#__PURE__*/_react.default.createElement("option", {
+        value: item.asset,
+        key: index
+      }, item.asset);
+    }
+  }) : null)), /*#__PURE__*/_react.default.createElement("div", {
+    className: "input-group mb-3"
+  }, /*#__PURE__*/_react.default.createElement("input", {
+    type: "text",
+    name: "model",
+    className: "form-control",
+    placeholder: "Model name",
+    "aria-label": "Recipient's username",
+    "aria-describedby": "basic-addon2",
+    onChange: onEdit
+  })), /*#__PURE__*/_react.default.createElement("div", {
+    className: "input-group mb-3"
+  }, /*#__PURE__*/_react.default.createElement("input", {
+    type: "date",
+    name: "date",
+    className: "form-control",
+    placeholder: "Date",
+    "aria-label": "Recipient's username",
+    "aria-describedby": "basic-addon2",
+    onChange: onEdit
+  }))), /*#__PURE__*/_react.default.createElement("div", {
+    className: "modal-footer"
+  }, /*#__PURE__*/_react.default.createElement("button", {
+    type: "button",
+    className: "btn btn-secondary",
+    "data-bs-dismiss": "modal"
+  }, "Close"), /*#__PURE__*/_react.default.createElement("button", {
+    type: "button",
+    className: "btn btn-primary",
+    onClick: function onClick() {
+      return editFun(idd);
+    },
+    "data-bs-dismiss": "modal"
+  }, "Save changes")))))));
+}
+var _default = Assign;
+exports.default = _default;
+},{"react":"node_modules/react/index.js","../Header":"src/Header.js","axios":"node_modules/axios/index.js","react-router-dom":"node_modules/react-router-dom/dist/index.js","./createAssign":"src/Assign/createAssign.js"}],"src/Employees/createEmployee.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -16131,9 +16683,6 @@ function EmployeePop(_ref) {
       console.log(item.department);
     });
   }
-  // depart.data.data.map((item)=>{
-  //   console.log(item)
-  // })
   return /*#__PURE__*/_react.default.createElement(_react.default.Fragment, null, /*#__PURE__*/_react.default.createElement("div", {
     className: "col-2",
     style: {
@@ -16199,10 +16748,12 @@ function EmployeePop(_ref) {
     value: "DEFAULT",
     disabled: true
   }, "Select Department"), depart && depart.data.data ? depart.data.data.map(function (item, index) {
-    return /*#__PURE__*/_react.default.createElement("option", {
-      value: item.department,
-      key: index
-    }, item.department);
+    if (item.isDelete == "false") {
+      return /*#__PURE__*/_react.default.createElement("option", {
+        value: item.department,
+        key: index
+      }, item.department);
+    }
   }) : null))), /*#__PURE__*/_react.default.createElement("div", {
     className: "modal-footer"
   }, /*#__PURE__*/_react.default.createElement("button", {
@@ -16294,6 +16845,10 @@ function Employee() {
     _useState12 = _slicedToArray(_useState11, 2),
     dd = _useState12[0],
     setdd = _useState12[1];
+  var _useState13 = (0, _react.useState)(),
+    _useState14 = _slicedToArray(_useState13, 2),
+    records = _useState14[0],
+    setRecord = _useState14[1];
   var navigate = (0, _reactRouterDom.useNavigate)();
   function addCategory() {
     return _addCategory.apply(this, arguments);
@@ -16322,7 +16877,6 @@ function Employee() {
               navigate("/employees");
             }).catch(function (err) {
               console.log(err);
-              xsxsssss;
             });
           case 6:
           case "end":
@@ -16392,9 +16946,33 @@ function Employee() {
       console.log(err);
     });
   }
+  function getRecords() {
+    return _getRecords.apply(this, arguments);
+  }
+  function _getRecords() {
+    _getRecords = _asyncToGenerator( /*#__PURE__*/_regeneratorRuntime().mark(function _callee3() {
+      return _regeneratorRuntime().wrap(function _callee3$(_context3) {
+        while (1) switch (_context3.prev = _context3.next) {
+          case 0:
+            _context3.next = 2;
+            return _axios.default.get("http://localhost:3001/getAssign").then(function (resp) {
+              setRecord(resp);
+              navigate("/employees");
+            }).catch(function (err) {
+              console.log(err);
+            });
+          case 2:
+          case "end":
+            return _context3.stop();
+        }
+      }, _callee3);
+    }));
+    return _getRecords.apply(this, arguments);
+  }
   (0, _react.useEffect)(function () {
     fetchInfo();
     fetchDepart();
+    getRecords();
   }, []);
   function onAdded(e) {
     if (e.target.name == "name") setAsset(_objectSpread(_objectSpread({}, asset), {}, {
@@ -16514,10 +17092,12 @@ function Employee() {
     value: "DEFAULT",
     disabled: true
   }, "Select Department"), depart && depart.data.data ? depart.data.data.map(function (item, index) {
-    return /*#__PURE__*/_react.default.createElement("option", {
-      value: item.department,
-      key: index
-    }, item.department);
+    if (item.isDelete == "false") {
+      return /*#__PURE__*/_react.default.createElement("option", {
+        value: item.department,
+        key: index
+      }, item.department);
+    }
   }) : null))), /*#__PURE__*/_react.default.createElement("div", {
     className: "modal-footer"
   }, /*#__PURE__*/_react.default.createElement("button", {
@@ -16864,7 +17444,7 @@ var _Protected = _interopRequireDefault(require("./Protected"));
 var _AssetsDash = _interopRequireDefault(require("./src/Assets/AssetsDash"));
 var _reactRouterDom = require("react-router-dom");
 var _Category = _interopRequireDefault(require("./src/Category/Category"));
-var _Asset = _interopRequireDefault(require("./src/Assets/Asset"));
+var _Assign = _interopRequireDefault(require("./src/Assign/Assign"));
 var _Employee = _interopRequireDefault(require("./src/Employees/Employee"));
 var _Department = _interopRequireDefault(require("./src/Department/Department"));
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -16912,8 +17492,8 @@ function App() {
       path: "category",
       element: /*#__PURE__*/_react.default.createElement(_Category.default, null)
     }, {
-      path: "assets",
-      element: /*#__PURE__*/_react.default.createElement(_Asset.default, null)
+      path: "assign",
+      element: /*#__PURE__*/_react.default.createElement(_Assign.default, null)
     }, {
       path: "employees",
       element: /*#__PURE__*/_react.default.createElement(_Employee.default, null)
@@ -16926,7 +17506,7 @@ function App() {
 }
 var _default = App;
 exports.default = _default;
-},{"react":"node_modules/react/index.js","./src/Header":"src/Header.js","./src/Login":"src/Login.js","./src/About":"src/About.js","./src/Logout":"src/Logout.js","./Protected":"Protected.js","./src/Assets/AssetsDash":"src/Assets/AssetsDash.js","react-router-dom":"node_modules/react-router-dom/dist/index.js","./src/Category/Category":"src/Category/Category.js","./src/Assets/Asset":"src/Assets/Asset.js","./src/Employees/Employee":"src/Employees/Employee.js","./src/Department/Department":"src/Department/Department.js"}],"node_modules/scheduler/cjs/scheduler.development.js":[function(require,module,exports) {
+},{"react":"node_modules/react/index.js","./src/Header":"src/Header.js","./src/Login":"src/Login.js","./src/About":"src/About.js","./src/Logout":"src/Logout.js","./Protected":"Protected.js","./src/Assets/AssetsDash":"src/Assets/AssetsDash.js","react-router-dom":"node_modules/react-router-dom/dist/index.js","./src/Category/Category":"src/Category/Category.js","./src/Assign/Assign":"src/Assign/Assign.js","./src/Employees/Employee":"src/Employees/Employee.js","./src/Department/Department":"src/Department/Department.js"}],"node_modules/scheduler/cjs/scheduler.development.js":[function(require,module,exports) {
 /**
  * @license React
  * scheduler.development.js
@@ -43323,7 +43903,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "34479" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "40593" + '/');
   ws.onmessage = function (event) {
     checkedAssets = {};
     assetsToAccept = [];

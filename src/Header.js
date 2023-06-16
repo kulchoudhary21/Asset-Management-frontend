@@ -35,9 +35,9 @@ function Header({ isLogin }) {
                 <Link
                   className="nav-link active"
                   aria-current="page"
-                  to="/assets"
+                  to="/assign"
                 >
-                  Assets
+                  Assign
                 </Link>
               </li>
               <li className="nav-item">

@@ -7,7 +7,7 @@ import Protected from "./Protected";
 import AssetsDash from "./src/Assets/AssetsDash";
 import { useRoutes } from "react-router-dom";
 import Category from "./src/Category/Category";
-import Asset from "./src/Assets/Asset";
+import Assign from "./src/Assign/Assign";
 import Employee from "./src/Employees/Employee";
 import Department from "./src/Department/Department";
 function App() {
@@ -44,8 +44,8 @@ function App() {
           element: <Category />,
         },
         {
-          path: "assets",
-          element: <Asset />,
+          path: "assign",
+          element: <Assign />,
         },
         {
           path: "employees",

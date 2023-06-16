@@ -1,11 +1,5 @@
 import React from "react";
-function EmployeePop({ onAdded, addCategory, depart }) {
-  console.log(depart);
-  if (depart && depart.data.data) {
-    depart.data.data.map((item) => {
-      console.log(item.department);
-    });
-  }
+function AssignPop({ onAdded, addCategory, depart, employeeName, category,getIdd }) {  
   return (
     <>
       <div
@@ -25,7 +19,6 @@ function EmployeePop({ onAdded, addCategory, depart }) {
           create category
         </button>
       </div>
-
       <div
         className="modal fade"
         id="exampleModal"
@@ -46,30 +39,33 @@ function EmployeePop({ onAdded, addCategory, depart }) {
                 aria-label="Close"
               ></button>
             </div>
+
             <div className="modal-body">
-              <div className="input-group mb-3">
-                <input
-                  type="text"
-                  name="name"
-                  className="form-control"
-                  placeholder="Employee name"
-                  aria-label="Recipient's username"
-                  aria-describedby="basic-addon2"
-                  onChange={onAdded}
-                />
-              </div>
               <div>
                 <select
-                  className="form-select"
+                  className="form-select mt-4"
                   defaultValue={"DEFAULT"}
                   onChange={onAdded}
-                  name="gender"
+                  name="name"
                 >
                   <option value="DEFAULT" disabled>
-                    Select gender
+                    Employee name
                   </option>
-                  <option value="male">male</option>
-                  <option value="female">female</option>
+                  {employeeName && employeeName.data.data
+                    ? employeeName.data.data.map((item, index) => {
+                      
+                        if (item.isDelete == "false") {
+                          const arr=[]
+                          arr.push(item.name)
+                          arr.push(item.emp_id)
+                          return (
+                            <option  key={index} value={arr}>
+                              {item.name}
+                            </option>
+                          );
+                        }
+                      })
+                    : null}
                 </select>
               </div>
               <div>
@@ -94,6 +90,51 @@ function EmployeePop({ onAdded, addCategory, depart }) {
                       })
                     : null}
                 </select>
+              </div>
+              <div className="input-group mb-3">
+                <select
+                  className="form-select mt-4"
+                  defaultValue={"DEFAULT"}
+                  onChange={onAdded}
+                  name="category"
+                >
+                  <option value="DEFAULT" disabled>
+                    Select asset category
+                  </option>
+                  {category && category.data.data
+                    ? category.data.data.map((item, index) => {
+                        if (item.isDelete == "false") {
+                          return (
+                            <option value={item.asset} key={index}>
+                              {item.asset}
+                            </option>
+                          );
+                        }
+                      })
+                    : null}
+                </select>
+              </div>
+              <div className="input-group mb-3">
+                <input
+                  type="text"
+                  name="model"
+                  className="form-control"
+                  placeholder="Model name"
+                  aria-label="Recipient's username"
+                  aria-describedby="basic-addon2"
+                  onChange={onAdded}
+                />
+              </div>
+              <div className="input-group mb-3">
+                <input
+                  type="date"
+                  name="date"
+                  className="form-control"
+                  placeholder="Date"
+                  aria-label="Recipient's username"
+                  aria-describedby="basic-addon2"
+                  onChange={onAdded}
+                />
               </div>
             </div>
             <div className="modal-footer">
@@ -120,4 +161,5 @@ function EmployeePop({ onAdded, addCategory, depart }) {
   );
 }
 
-export default EmployeePop;
+export default AssignPop;
+

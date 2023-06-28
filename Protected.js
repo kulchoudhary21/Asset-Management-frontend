@@ -5,7 +5,7 @@ function Protected({isLogin}) {
     const navigate = useNavigate();
     const location=useLocation();
     const path=location.pathname;
-    console.log(path)
+    // console.log(path)
     // useEffect(()=>{
     //   if(isLogin && path=="/"){
     //     navigate("/home")

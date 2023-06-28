@@ -1,8 +1,12 @@
 import React, { useEffect, useState } from "react";
 import Header from "../Header";
 import axios from "axios";
+import { faPenToSquare, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useNavigate } from "react-router-dom";
 import CategoryPop from "./createCategory";
+import pic from "../../img/noRecord.jpeg";
+
 const assetCategory = () => {
   return { assetCategory: "", isDelete: "false" };
 };
@@ -14,10 +18,11 @@ function Category() {
   const [data, setData] = useState();
   const [editData, setEditData] = useState(() => editCategory1());
   const [idd, setid] = useState();
+  const [serchData, setSearchData] = useState();
+  const [show, setShow] = useState(true);
   const navigate = useNavigate();
 
   async function addCategory() {
-    console.log(asset);
     if (asset && asset.assetCategory) {
       await axios
         .post("http://localhost:3001/assetCreateCategory", asset)
@@ -41,15 +46,12 @@ function Category() {
   }
 
   async function editFun(id) {
-    console.log(id, "cc");
     if (editData && editData.assetCategory) {
       await axios
         .put(`http://localhost:3001/editCategory/${id}`, editData)
         .then((resp) => {
-          console.log(resp);
           setData(resp);
           fetchInfo();
-          
         })
         .catch((err) => {
           console.log("err", err);
@@ -72,6 +74,27 @@ function Category() {
       .get("http://localhost:3001/assetGetCategory")
       .then((resp) => {
         setData(resp);
+        console.log("jnsj", typeof serchData);
+        let arr = [];
+        if (resp.data.data && serchData) {
+          arr = resp.data.data.filter((item) => {
+            return item.asset.toLowerCase().includes(serchData.toLowerCase());
+          });
+        }
+        if (arr.length == 0) {
+          if (serchData) {
+            setShow(false);
+          } else {
+            setData(resp);
+            setShow(true);
+          }
+        } else {
+          setShow(true);
+          resp.data.data = arr;
+          console.log(resp);
+          setData(resp);
+        }
+        console.log("iwiwiwixwiwix", arr);
         navigate("/category");
       })
       .catch((err) => {
@@ -80,65 +103,79 @@ function Category() {
   }
   useEffect(() => {
     fetchInfo();
-  }, []);
-  
+  }, [serchData]);
+
   function onAdded(e) {
     setAsset({ ...asset, assetCategory: e.target.value });
   }
   function onEdit(e) {
     setEditData({ ...editData, assetCategory: e.target.value });
   }
+  function func(e) {
+    setSearchData(e.target.value);
+  }
   return (
     <div>
-      <Header />
-      <div className="row">
-        <div className="col-6">
-          <h5>Categories</h5>
-          <table className="table" key={1}>
-            <thead key={2}>
-              <tr key={3}>
-                <th scope="col">Asset</th>
-                <th>Delete</th>
-                <th>Edit</th>
-              </tr>
-            </thead>
-            {data && data.data.data !== undefined ? (
-              <tbody key={4}>
-                {data.data.data.map((item, index) => (
-                  <tr key={index}>
-                    {item.isDelete == "false" ? (
-                      <>
-                        <td>{item.asset}</td>
-                        <td>
-                          <button
-                            className="btn btn-success"
-                            type="button"
-                            onClick={() => delet(item.id)}
-                          >
-                            delete
-                          </button>
-                        </td>
-                        <td>
-                          <button
-                            type="button"
-                            onClick={() => setid(item.id)}
-                            className="btn btn-primary"
-                            data-bs-toggle="modal"
-                            data-bs-target="#exampleModal1"
-                          >
-                            edit
-                          </button>
-                        </td>
-                      </>
-                    ) : null}
-                  </tr>
-                ))}
-              </tbody>
-            ) : null}
-          </table>
+      <Header func={func} />
+      {show ? (
+        <div className="row">
+          <div className="col-6">
+            <h5>Categories</h5>
+            <table className="table" key={1}>
+              <thead key={2}>
+                <tr key={3}>
+                  <th scope="col">Asset</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              {data && data.data.data !== undefined ? (
+                <tbody key={4}>
+                  {data.data.data.map((item, index) => (
+                    <tr key={index}>
+                      {item.isDelete == "false" ? (
+                        <>
+                          <td>{item.asset}</td>
+                          <td>
+                            <FontAwesomeIcon
+                              icon={faTrash}
+                              onClick={() => delet(item.id)}
+                              type="button"
+                              className="btn btn-primary"
+                              data-bs-target="#exampleModal"
+                            />
+                            <FontAwesomeIcon
+                              onClick={() => setid(item.id)}
+                              style={{ marginLeft: "15px" }}
+                              icon={faPenToSquare}
+                              type="button"
+                              className="btn btn-primary"
+                              data-bs-toggle="modal"
+                              data-bs-target="#exampleModal1"
+                            />
+                          </td>
+                        </>
+                      ) : null}
+                    </tr>
+                  ))}
+                </tbody>
+              ) : null}
+            </table>
+          </div>
+          <CategoryPop onAdded={onAdded} addCategory={addCategory} />
         </div>
-        <CategoryPop onAdded={onAdded} addCategory={addCategory} />
-      </div>
+      ) : (
+        <div style={{ margin: "20px" }}>
+          <img
+            src={pic}
+            style={{
+              width: "50%",
+              marginLeft: "auto",
+              marginRight: "auto",
+              display: "block",
+            }}
+          />
+        </div>
+      )}
       <div>
         <div
           className="modal fade"

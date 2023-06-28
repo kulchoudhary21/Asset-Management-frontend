@@ -1,9 +1,6 @@
 import React, { useEffect } from "react";
 
 function EditCategory({ onEdit, editFun, editId }) {
-  useEffect(() => {
-    console.log("cisdi", editId);
-  }, [editId]);
   return (
     <>
       <div className="col-6">
@@ -14,8 +11,8 @@ function EditCategory({ onEdit, editFun, editId }) {
           data-bs-target="#exampleModal1"
         >
           edit
-        </button> 
-      </div> 
+        </button>
+      </div>
 
       <div
         className="modal fade"

@@ -3,6 +3,9 @@ import Header from "../Header";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import AssignPop from "./createAssign";
+import { faPenToSquare, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import pic from "../../img/noRecord.jpeg";
 const assignCategory = () => {
   return {
     emp_id: "",
@@ -34,9 +37,11 @@ function Assign() {
   const [empId, setEmpId] = useState();
   const [idd, setid] = useState();
   const [dd, setdd] = useState();
+  const [serchData, setSearchData] = useState();
+  const [show, setShow] = useState(true);
   const navigate = useNavigate();
+  // alert("HEllo")
   async function addCategory() {
-    console.log(asset);
     if (asset && asset.emp_name && asset.department) {
       await axios
         .post("http://localhost:3001/createAssign", asset)
@@ -57,14 +62,16 @@ function Assign() {
           console.log(err);
         });
     } else {
-      console.log("hihi");
     }
   }
 
   async function editFun(id) {
-    console.log("---dd--", editData);
-    console.log("idididi",id)
-    if (editData && editData.emp_name && editData.department && editData.category ) {
+    if (
+      editData &&
+      editData.emp_name &&
+      editData.department &&
+      editData.category
+    ) {
       await axios
         .put(`http://localhost:3001/editAssign/${id}`, editData)
         .then((resp) => {
@@ -78,7 +85,6 @@ function Assign() {
     }
   }
   const delet = (id) => {
-    console.log(id);
     axios
       .put(`http://localhost:3001/deleteAssign/${id}`)
       .then((resp) => {
@@ -95,7 +101,27 @@ function Assign() {
       .get("http://localhost:3001/getAssign")
       .then((resp) => {
         setData(resp);
-        console.log("dd", data);
+        console.log("jnsj", typeof serchData);
+        let arr = [];
+        if (resp.data.data && serchData) {
+          arr = resp.data.data.filter((item) => {
+            return item.emp_name.toLowerCase().includes(serchData.toLowerCase());
+          });
+        }
+        if (arr.length == 0) {
+          if (serchData) {
+            setShow(false);
+          } else {
+            setData(resp);
+            setShow(true);
+          }
+        } else {
+          setShow(true);
+          resp.data.data = arr;
+          console.log(resp);
+          setData(resp);
+        }
+        console.log("iwiwiwixwiwix", arr);
         navigate("/assign");
       })
       .catch((err) => {
@@ -147,7 +173,9 @@ function Assign() {
     fetchEmployee();
     fetchCategory();
   }, []);
-
+  useEffect(() => {
+    fetchInfo();
+  }, [serchData]);
   function onAdded(e) {
     if (e.target.name == "name") {
       const arr = e.target.value.split(",");
@@ -157,8 +185,6 @@ function Assign() {
       setAsset({ ...asset, department: e.target.value });
 
     if (e.target.name == "date") {
-      console.log(e.target.value);
-      deleteAssign;
       setAsset({ ...asset, issueDate: e.target.value });
     }
     if (e.target.name == "category")
@@ -167,7 +193,6 @@ function Assign() {
     if (e.target.name == "model") setAsset({ ...asset, model: e.target.value });
   }
   function onEdit(e) {
-    console.log("HElllllll");
     if (e.target.name == "name") {
       const arr = e.target.value.split(",");
       setEditData({ ...editData, emp_name: arr[0], emp_id: arr[1] });
@@ -177,8 +202,6 @@ function Assign() {
       setEditData({ ...editData, department: e.target.value });
 
     if (e.target.name == "date") {
-      console.log(e.target.value);
-      // deleteAssign;
       setEditData({ ...editData, issueDate: e.target.value });
     }
     if (e.target.name == "category")
@@ -189,76 +212,88 @@ function Assign() {
   }
 
   const getIdd = (id) => {
-    console.log("id is", id);
     setEmpId(id);
   };
+  function func(e) {
+    setSearchData(e.target.value);
+  }
   return (
     <div>
-      <Header />
-      <div className="row">
-        <div className="col-8">
-          <h5>Employees</h5>
-          <table className="table" key={11}>
-            <thead className="table-info">
-              <tr>
-                <th>Name</th>
-                <th>department</th>
-                <th>category</th>
-                <th>Model</th>
-                <th>Issue date</th>
-                <th>Delete</th>
-                <th>edit</th>
-              </tr>
-            </thead>
-            {data && data.data.data !== undefined ? (
-              <tbody key={1}>
-                {data.data.data.map((item, index) => (
-                  <tr className="table-secondary" key={index}>
-                    {item.isDelete == "false" ? (
-                      <>
-                        <td className="table-success">{item.emp_name}</td>
-                        <td className="table-success">{item.department}</td>
-                        <td className="table-success">{item.category}</td>
-                        <td className="table-success">{item.model}</td>
-                        <td className="table-success">{item.issueDate}</td>
-                        <td>
-                          <button
-                            className="btn btn-success"
-                            type="button"
-                            onClick={() => delet(item.a_id)}
-                          >
-                            delete
-                          </button>
-                        </td>
-                        <td>
-                          <button
-                            type="button"
-                            onClick={() => setid(item.a_id)}
-                            className="btn btn-primary"
-                            data-bs-toggle="modal"
-                            data-bs-target="#exampleModal1"
-                          >
-                            edit
-                          </button>
-                        </td>
-                      </>
-                    ) : null}
-                  </tr>
-                ))}
-              </tbody>
-            ) : null}
-          </table>
+      <Header func={func} />
+      {show ? (
+        <div className="row">
+          <div className="col-8">
+            <h5>Employees</h5>
+            <table className="table" key={11}>
+              <thead className="table-info">
+                <tr>
+                  <th>Name</th>
+                  <th>department</th>
+                  <th>category</th>
+                  <th>Model</th>
+                  <th>Issue date</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              {data && data.data.data !== undefined ? (
+                <tbody key={1}>
+                  {data.data.data.map((item, index) => (
+                    <tr className="table-secondary" key={index}>
+                      {item.isDelete == "false" ? (
+                        <>
+                          <td className="table-success">{item.emp_name}</td>
+                          <td className="table-success">{item.department}</td>
+                          <td className="table-success">{item.category}</td>
+                          <td className="table-success">{item.model}</td>
+                          <td className="table-success">{item.issueDate}</td>
+                          <td>
+                            <FontAwesomeIcon
+                              icon={faTrash}
+                              onClick={() => delet(item.a_id)}
+                              type="button"
+                              className="btn btn-primary"
+                            />
+                            <FontAwesomeIcon
+                              style={{ marginLeft: "15px" }}
+                              onClick={() => setid(item.a_id)}
+                              icon={faPenToSquare}
+                              type="button"
+                              className="btn btn-primary"
+                              data-bs-toggle="modal"
+                              data-bs-target="#exampleModal1"
+                            />
+                          </td>
+                        </>
+                      ) : null}
+                    </tr>
+                  ))}
+                </tbody>
+              ) : null}
+            </table>
+          </div>
+          <AssignPop
+            onAdded={onAdded}
+            addCategory={addCategory}
+            depart={depart}
+            dd={dd}
+            employeeName={employeeName}
+            getIdd={getIdd}
+            category={category}
+          />
         </div>
-        <AssignPop
-          onAdded={onAdded}
-          addCategory={addCategory}
-          depart={depart}
-          dd={dd}
-          employeeName={employeeName}
-          getIdd={getIdd}
-          category={category}
-        />
-      </div>
+      ) : (
+        <div style={{ margin: "20px" }}>
+          <img
+            src={pic}
+            style={{
+              width: "50%",
+              marginLeft: "auto",
+              marginRight: "auto",
+              display: "block",
+            }}
+          />
+        </div>
+      )}
       <div>
         <div
           className="modal fade"

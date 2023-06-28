@@ -1,4 +1,29 @@
-.col-4{
+.main {
+    background-image: url("../img/slide-2.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    height: max-content;
+}
+
+.cl {
     padding-top: 30px;
     padding-bottom: 30px;
+
+    display: flex;
+    justify-content: center;
 }
+
+.c {
+    background-color:white;
+    color: antiquewhite;
+}
+.struct{
+    padding-top: 100px;
+    padding-bottom: 50px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-content: center;
+    flex-wrap: wrap;
+}
+

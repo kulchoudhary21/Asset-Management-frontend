@@ -3,6 +3,9 @@ import Header from "../Header";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import EmployeePop from "./createEmployee";
+import { faPenToSquare, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import pic from "../../img/noRecord.jpeg";
 const assetCategory = () => {
   return { name: "", department: "", gender: "", isDelete: "false" };
 };
@@ -17,10 +20,11 @@ function Employee() {
   const [idd, setid] = useState();
   const [dd, setdd] = useState();
   const [records, setRecord] = useState();
+  const [serchData, setSearchData] = useState();
+  const [show, setShow] = useState(true);
   const navigate = useNavigate();
 
   async function addCategory() {
-    console.log(asset);
     if (asset && asset.name && asset.department && asset.gender) {
       await axios
         .post("http://localhost:3001/createEmployee", asset)
@@ -44,15 +48,10 @@ function Employee() {
   }
 
   async function editFun(id) {
-    console.log(id, "cc");
-    console.log("-", id, editData);
-    console.log("--", editData);
     if (editData && editData.name && editData.gender && editData.department) {
-      console.log("jhh;");
       await axios
         .put(`http://localhost:3001/editEmployee/${id}`, editData)
         .then((resp) => {
-          console.log(resp);
           setData(resp);
           fetchInfo();
         })
@@ -77,7 +76,27 @@ function Employee() {
       .get("http://localhost:3001/getEmployee")
       .then((resp) => {
         setData(resp);
-        console.log("dd", data);
+        console.log("jnsj", typeof serchData);
+        let arr = [];
+        if (resp.data.data && serchData) {
+          arr = resp.data.data.filter((item) => {
+            return item.name.toLowerCase().includes(serchData.toLowerCase());
+          });
+        }
+        if (arr.length == 0) {
+          if (serchData) {
+            setShow(false);
+          } else {
+            setData(resp);
+            setShow(true);
+          }
+        } else {
+          setShow(true);
+          resp.data.data = arr;
+          console.log(resp);
+          setData(resp);
+        }
+        console.log("iwiwiwixwiwix", arr);
         navigate("/employees");
       })
       .catch((err) => {
@@ -115,7 +134,9 @@ function Employee() {
     fetchDepart();
     getRecords();
   }, []);
-
+  useEffect(() => {
+    fetchInfo();
+  }, [serchData]);
   function onAdded(e) {
     if (e.target.name == "name") setAsset({ ...asset, name: e.target.value });
 
@@ -135,70 +156,83 @@ function Employee() {
     if (e.target.name == "gender")
       setEditData({ ...editData, gender: e.target.value });
   }
-
+  function func(e) {
+    setSearchData(e.target.value);
+  }
   return (
     <div>
-      <Header />
-      <div className="row">
-        <div className="col-8">
-          <h5>Employees</h5>
-          <table className="table" key={11}>
-            <thead className="table-info">
-              <tr>
-                <th>Name</th>
-                <th>gender</th>
-                <th>department</th>
-                <th>Records</th>
-                <th>Delete</th>
-                <th>edit</th>
-              </tr>
-            </thead>
-            {data && data.data.data !== undefined ? (
-              <tbody key={1}>
-                {data.data.data.map((item, index) => (
-                  <tr className="table-secondary" key={index}>
-                    {item.isDelete == "false" ? (
-                      <>
-                        <td className="table-success">{item.name}</td>
-                        <td className="table-success">{item.gender}</td>
-                        <td className="table-success">{item.department}</td>
-                        <td className="table-success">{item.records}</td>
+      <Header func={func} />
+      {show ? (
+        <div className="row">
+          <div className="col-8">
+            <h5>Employees</h5>
+            <table className="table" key={11}>
+              <thead className="table-info">
+                <tr>
+                  <th>Name</th>
+                  <th>gender</th>
+                  <th>department</th>
+                  <th>Records</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              {data && data.data.data !== undefined ? (
+                <tbody key={1}>
+                  {data.data.data.map((item, index) => (
+                    <tr className="table-secondary" key={index}>
+                      {item.isDelete == "false" ? (
+                        <>
+                          <td className="table-success">{item.name}</td>
+                          <td className="table-success">{item.gender}</td>
+                          <td className="table-success">{item.department}</td>
+                          <td className="table-success">{item.records}</td>
 
-                        <td>
-                          <button
-                            className="btn btn-success"
-                            type="button"
-                            onClick={() => delet(item.emp_id)}
-                          >
-                            delete
-                          </button>
-                        </td>
-                        <td>
-                          <button
-                            type="button"
-                            onClick={() => setid(item.emp_id)}
-                            className="btn btn-primary"
-                            data-bs-toggle="modal"
-                            data-bs-target="#exampleModal1"
-                          >
-                            edit
-                          </button>
-                        </td>
-                      </>
-                    ) : null}
-                  </tr>
-                ))}
-              </tbody>
-            ) : null}
-          </table>
+                          <td>
+                            <FontAwesomeIcon
+                              icon={faTrash}
+                              onClick={() => delet(item.emp_id)}
+                              type="button"
+                              className="btn btn-primary"
+                            />
+                            <FontAwesomeIcon
+                              style={{ marginLeft: "15px" }}
+                              onClick={() => setid(item.emp_id)}
+                              icon={faPenToSquare}
+                              type="button"
+                              className="btn btn-primary"
+                              data-bs-toggle="modal"
+                              data-bs-target="#exampleModal1"
+                            />
+                          </td>
+                        </>
+                      ) : null}
+                    </tr>
+                  ))}
+                </tbody>
+              ) : null}
+            </table>
+          </div>
+          <EmployeePop
+            onAdded={onAdded}
+            addCategory={addCategory}
+            depart={depart}
+            dd={dd}
+          />
         </div>
-        <EmployeePop
-          onAdded={onAdded}
-          addCategory={addCategory}
-          depart={depart}
-          dd={dd}
-        />
-      </div>
+      ) : (
+        <div style={{ margin: "20px" }}>
+          <img
+            src={pic}
+            style={{
+              width: "50%",
+              marginLeft: "auto",
+              marginRight: "auto",
+              display: "block",
+            }}
+          />
+        </div>
+      )}
+
       <div>
         <div
           className="modal fade"

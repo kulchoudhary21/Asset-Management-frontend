@@ -1,23 +1,27 @@
 import React from "react";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
 function AssignPop({ onAdded, addCategory, depart, employeeName, category,getIdd }) {  
   return (
     <>
       <div
-        className="col-2"
+        className="col-4"
         style={{
           direction: "rtl",
           marginLeft: "inherit",
           paddingRight: "5%",
+          marginTop:'15px'
         }}
       >
-        <button
+        
+        <FontAwesomeIcon
+          icon={faPlus}
           type="button"
           className="btn btn-primary"
           data-bs-toggle="modal"
           data-bs-target="#exampleModal"
-        >
-          create category
-        </button>
+        />
       </div>
       <div
         className="modal fade"

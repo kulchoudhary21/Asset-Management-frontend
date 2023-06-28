@@ -13,7 +13,6 @@ export default function Login({ login }) {
   const [msg, setmsg] = useState("");
   const navigate = useNavigate();
   const check = () => {
-    console.log(admin)
     if(admin.email!="" && admin.passwd!=""){
     axios
       .post("http://localhost:3001/login", admin)

@@ -3,6 +3,9 @@ import Header from "../Header";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import DepartmentPop from "./createDepartment";
+import { faPenToSquare, faTrash } from "@fortawesome/free-solid-svg-icons";
+import pic from "../../img/noRecord.jpeg";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 const assetCategory = () => {
   return { assetCategory: "", isDelete: "false" };
 };
@@ -14,10 +17,11 @@ function Department() {
   const [data, setData] = useState();
   const [editData, setEditData] = useState(() => editCategory1());
   const [idd, setid] = useState();
+  const [serchData, setSearchData] = useState();
+  const [show, setShow] = useState(true);
   const navigate = useNavigate();
 
   async function addCategory() {
-    console.log(asset);
     if (asset && asset.assetCategory) {
       await axios
         .post("http://localhost:3001/createDepartment", asset)
@@ -41,15 +45,12 @@ function Department() {
   }
 
   async function editFun(id) {
-    console.log(id, "cc");
     if (editData && editData.assetCategory) {
       await axios
         .put(`http://localhost:3001/editDepartment/${id}`, editData)
         .then((resp) => {
-          console.log(resp);
           setData(resp);
           fetchInfo();
-          
         })
         .catch((err) => {
           console.log("err", err);
@@ -72,6 +73,29 @@ function Department() {
       .get("http://localhost:3001/getDepartment")
       .then((resp) => {
         setData(resp);
+        // console.log("jnsj", typeof serchData);
+        let arr = [];
+        if (resp.data.data && serchData) {
+          arr = resp.data.data.filter((item) => {
+            return item.department
+              .toLowerCase()
+              .includes(serchData.toLowerCase());
+          });
+        }
+        if (arr.length == 0) {
+          if (serchData) {
+            setShow(false);
+          } else {
+            setData(resp);
+            setShow(true)
+          }
+        } else {
+          setShow(true)
+          resp.data.data = arr;
+          console.log(resp);
+          setData(resp);
+        }
+        // console.log("iwiwiwixwiwix", arr);
         navigate("/department");
       })
       .catch((err) => {
@@ -80,65 +104,75 @@ function Department() {
   }
   useEffect(() => {
     fetchInfo();
-  }, []);
-  
+  }, [serchData]);
+
   function onAdded(e) {
     setAsset({ ...asset, assetCategory: e.target.value });
   }
   function onEdit(e) {
     setEditData({ ...editData, assetCategory: e.target.value });
   }
+  function func(e) {
+    setSearchData(e.target.value);
+  }
   return (
     <div>
-      <Header />
-      <div className="row">
-        <div className="col-6">
-          <h5>Categories</h5>
-          <table className="table" key={1}>
-            <thead key={2}>
-              <tr key={3}>
-                <th scope="col">Asset</th>
-                <th>Delete</th>
-                <th>Edit</th>
-              </tr>
-            </thead>
-            {data && data.data.data !== undefined ? (
-              <tbody key={4}>
-                {data.data.data.map((item, index) => (
-                  <tr key={index}>
-                    {item.isDelete == "false" ? (
+      <Header func={func} />
+      {show ? (
+        <div className="row">
+          <div className="col-6">
+            <h5>Categories</h5>
+            <table className="table" key={1}>
+              <thead key={2}>
+                <tr key={3}>
+                  <th scope="col">Asset</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              {data && data.data.data !== undefined ? (
+                <tbody key={4}>
+                  {data.data.data.map((item, index) => (
+                    <tr key={index}>
                       <>
                         <td>{item.department}</td>
                         <td>
-                          <button
-                            className="btn btn-success"
-                            type="button"
+                          <FontAwesomeIcon
+                            icon={faTrash}
                             onClick={() => delet(item.id)}
-                          >
-                            delete
-                          </button>
-                        </td>
-                        <td>
-                          <button
                             type="button"
+                            className="btn btn-primary"
+                          />
+                          <FontAwesomeIcon
+                            style={{ marginLeft: "15px" }}
                             onClick={() => setid(item.id)}
+                            icon={faPenToSquare}
+                            type="button"
                             className="btn btn-primary"
                             data-bs-toggle="modal"
                             data-bs-target="#exampleModal1"
-                          >
-                            edit
-                          </button>
+                          />
                         </td>
                       </>
-                    ) : null}
-                  </tr>
-                ))}
-              </tbody>
-            ) : null}
-          </table>
+                    </tr>
+                  ))}
+                </tbody>
+              ) : null}
+            </table>
+          </div>
+          <DepartmentPop onAdded={onAdded} addCategory={addCategory} />
         </div>
-        <DepartmentPop onAdded={onAdded} addCategory={addCategory} />
-      </div>
+      ) : (<div style={{ margin: "20px" }}>
+      <img
+        src={pic}
+        style={{
+          width: "50%",
+          marginLeft: "auto",
+          marginRight: "auto",
+          display: "block",
+        }}
+      />
+    </div>)}
+
       <div>
         <div
           className="modal fade"
@@ -197,4 +231,4 @@ function Department() {
   );
 }
 
-export default Department
+export default Department;

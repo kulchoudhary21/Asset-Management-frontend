@@ -1,6 +1,8 @@
 import React from "react";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-function CategoryPop({onAdded,addCategory}) {
+function CategoryPop({ onAdded, addCategory }) {
   return (
     <>
       <div
@@ -9,18 +11,19 @@ function CategoryPop({onAdded,addCategory}) {
           direction: "rtl",
           marginLeft: "inherit",
           paddingRight: "5%",
+          marginTop:'15px'
         }}
       >
-        <button
+        
+        <FontAwesomeIcon
+          icon={faPlus}
           type="button"
           className="btn btn-primary"
           data-bs-toggle="modal"
           data-bs-target="#exampleModal"
-        >
-          create category
-        </button>
+        />
       </div>
-
+      <div></div>
       <div
         className="modal fade"
         id="exampleModal"

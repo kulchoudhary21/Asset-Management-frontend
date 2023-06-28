@@ -1,29 +1,28 @@
 import React from "react";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
 function EmployeePop({ onAdded, addCategory, depart }) {
-  console.log(depart);
-  if (depart && depart.data.data) {
-    depart.data.data.map((item) => {
-      console.log(item.department);
-    });
-  }
+  
   return (
     <>
       <div
-        className="col-2"
+        className="col-4"
         style={{
           direction: "rtl",
           marginLeft: "inherit",
           paddingRight: "5%",
+          marginTop:'15px'
         }}
       >
-        <button
+        
+        <FontAwesomeIcon
+          icon={faPlus}
           type="button"
           className="btn btn-primary"
           data-bs-toggle="modal"
           data-bs-target="#exampleModal"
-        >
-          create category
-        </button>
+        />
       </div>
 
       <div

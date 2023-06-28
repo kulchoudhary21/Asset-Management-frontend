@@ -1,17 +1,24 @@
 import React from "react";
-import laptop from "../../images/laptop1.jpeg"
-function AssetsCard({image}) {
+
+import "../../css/assets.css";
+import { Link } from "react-router-dom";
+function AssetsCard({ title,desc,link,total }) {
   return (
-    <div>
-      <div className="card" style={{width: "18rem"}}>
-        <img src={image} className="card-img-top" style={{width:"250px",height:'250px',textAlign:'center'}}/>
-        <div className="card-body">
-          <h5 className="card-title">laptop</h5>
+    <div className="assetCard">
+      <div className="card c" style={{ width: "30rem",height:'14rem' }}>
+        <div className="card-body" style={{color:"black"}}>
+          <h5 className="card-title">{title}</h5>
+            <hr/>
+          <p className="card-text">
+            {desc}
+          </p>
+          <h6 className="card-subtitle mb-2 ">
+           {total}
+          </h6>
+          <Link to={link} className="card-link lk" style={{textDecoration:"none",color:'blue',}}>
+            {title}
+          </Link>
         </div>
-        <ul className="list-group list-group-flush">
-          <li className="list-group-item">item 10</li>
-          <li className="list-group-item">category hp</li>
-        </ul>
       </div>
     </div>
   );

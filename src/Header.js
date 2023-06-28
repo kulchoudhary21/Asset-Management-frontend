@@ -1,11 +1,25 @@
-import React from "react";
-import { Link, Navigate } from "react-router-dom";
-function Header({ isLogin }) {
+import React, { useEffect, useState } from "react";
+import { Link, useLocation } from "react-router-dom";
+function Header({func}) {
+  const [path, setPath] = useState();
+  const location = useLocation();
+  useEffect(() => {
+    const p = location.pathname;
+    setPath(p);
+  }, [path]);
+
   return (
     <div>
-      <nav className="navbar navbar-expand-lg bg-body-tertiary">
+      <nav
+        className="navbar navbar-expand-lg bg"
+        style={{ backgroundColor: "#262626", color: "aliceblue" }}
+      >
         <div className="container-fluid">
-          <Link className="navbar-brand" to="/home">
+          <Link
+            className="navbar-brand"
+            to="/home"
+            style={{ color: "darkgrey" }}
+          >
             Asset
           </Link>
           <button className="navbar-toggler" type="button">
@@ -15,6 +29,7 @@ function Header({ isLogin }) {
             <ul className="navbar-nav me-auto mb-2 mb-lg-0">
               <li className="nav-item">
                 <Link
+                  style={{ color: "aliceblue" }}
                   className="nav-link active"
                   aria-current="page"
                   to="/about"
@@ -24,6 +39,7 @@ function Header({ isLogin }) {
               </li>
               <li className="nav-item">
                 <Link
+                  style={{ color: "aliceblue" }}
                   className="nav-link active"
                   aria-current="page"
                   to="/category"
@@ -32,7 +48,20 @@ function Header({ isLogin }) {
                 </Link>
               </li>
               <li className="nav-item">
+                {path != "/home" && path != "/about" ? (
+                  <div style={{ position: "absolute", right: "8%" }}>
+                    <input
+                      className="form-control me-2"
+                      type="search"
+                      placeholder="Search"
+                      aria-label="Search"
+                     onChange={func}
+                    />
+                  </div>
+                ) : null}
+
                 <Link
+                  style={{ color: "aliceblue" }}
                   className="nav-link active"
                   aria-current="page"
                   to="/assign"
@@ -42,6 +71,7 @@ function Header({ isLogin }) {
               </li>
               <li className="nav-item">
                 <Link
+                  style={{ color: "aliceblue" }}
                   className="nav-link active"
                   aria-current="page"
                   to="/employees"
@@ -51,6 +81,7 @@ function Header({ isLogin }) {
               </li>
               <li className="nav-item">
                 <Link
+                  style={{ color: "aliceblue" }}
                   className="nav-link active"
                   aria-current="page"
                   to="/department"
@@ -59,8 +90,12 @@ function Header({ isLogin }) {
                 </Link>
               </li>
               <div>
-                <li className="nav-item">
+                <li
+                  className="nav-item"
+                  style={{ position: "absolute", right: "10px" }}
+                >
                   <Link
+                    style={{ color: "aliceblue" }}
                     className="nav-link active"
                     aria-current="page"
                     to="/logout"
